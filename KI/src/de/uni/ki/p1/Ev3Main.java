@@ -7,7 +7,7 @@ import lejos.hardware.Button;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.*;
 import lejos.hardware.motor.*;
-import lejos.hardware.port.SensorPort;
+import lejos.hardware.port.*;
 import lejos.hardware.sensor.*;
 import lejos.robotics.*;
 import lejos.robotics.chassis.*;
@@ -18,8 +18,8 @@ public class Ev3Main
 {
 	public static void main(String[] args) throws Exception
 	{
-		Wheel wheel1 = WheeledChassis.modelWheel(new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A")), 43.2).offset(-72);
-		Wheel wheel2 = WheeledChassis.modelWheel(new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D")), 43.2).offset(72);
+		Wheel wheel1 = WheeledChassis.modelWheel(new EV3LargeRegulatedMotor(MotorPort.A), 43.2).offset(-72);
+		Wheel wheel2 = WheeledChassis.modelWheel(new EV3LargeRegulatedMotor(MotorPort.D), 43.2).offset(72);
 		Chassis chassis = new WheeledChassis(new Wheel[]{wheel1, wheel2}, 2); 
 		MovePilot pilot = new MovePilot(chassis);
 		
