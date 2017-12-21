@@ -4,6 +4,7 @@
 package de.uni.ki.p1;
 
 import lejos.hardware.Button;
+import lejos.hardware.device.NXTCam;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.*;
 import lejos.hardware.motor.*;
@@ -18,13 +19,14 @@ public class Ev3Main
 {
 	public static void main(String[] args) throws Exception
 	{
-		Wheel wheel1 = WheeledChassis.modelWheel(new EV3LargeRegulatedMotor(MotorPort.A), 43.2).offset(-72);
-		Wheel wheel2 = WheeledChassis.modelWheel(new EV3LargeRegulatedMotor(MotorPort.D), 43.2).offset(72);
+		Wheel wheel1 = WheeledChassis.modelWheel(new EV3LargeRegulatedMotor(MotorPort.B), 6.5).offset(-6.8);
+		Wheel wheel2 = WheeledChassis.modelWheel(new EV3LargeRegulatedMotor(MotorPort.C), 6.5).offset(6.8);
 		Chassis chassis = new WheeledChassis(new Wheel[]{wheel1, wheel2}, 2); 
 		MovePilot pilot = new MovePilot(chassis);
 		
-		EV3ColorSensor col = new EV3ColorSensor(SensorPort.S1);
-		EV3UltrasonicSensor us = new EV3UltrasonicSensor(SensorPort.S2);
+		NXTCam cam = new NXTCam(SensorPort.S1);
+		EV3ColorSensor col = new EV3ColorSensor(SensorPort.S2);
+		EV3UltrasonicSensor us = new EV3UltrasonicSensor(SensorPort.S4);
 		
 		SampleProvider sp = new PublishFilter(new SampleProvider()
     		{
@@ -32,7 +34,7 @@ public class Ev3Main
     			@Override
     			public int sampleSize()
     			{
-    				return 4;
+    				return 3 + us.sampleSize() + cam.sampleSize();
     			}
     			
     			@Override
@@ -42,20 +44,22 @@ public class Ev3Main
     				sample[1] = wheel2.getMotor().getTachoCount();
     				sample[2] = col.getColorID();
     				us.getDistanceMode().fetchSample(sample, 3);
+    				cam.fetchSample(sample, 3 + us.sampleSize());
     			}
     		}, "data", 1);
 		
 		float[] sample = new float[sp.sampleSize()];
-		pilot.setLinearSpeed(30);  // cm per second
+		pilot.setLinearSpeed(6);  // cm per second
+		pilot.setAngularSpeed(90);
 		
 		introMessage();
 		
 		sendData(sp, sample);
-		pilot.travel(-50);
+		pilot.travel(50);
 		sendData(sp, sample);
 		pilot.rotate(-90);
 		pilot.rotate(270);
-		pilot.travel(-50);
+		pilot.travel(50);
 		sendData(sp, sample);
 		pilot.rotate(180);
 		sendData(sp, sample);
@@ -63,6 +67,7 @@ public class Ev3Main
 		col.close();
 		us.close();
 		pilot.stop();
+		cam.close();
 	}
 	
 	private static void sendData(SampleProvider sp, float[] sample) throws InterruptedException

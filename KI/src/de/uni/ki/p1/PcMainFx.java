@@ -6,7 +6,7 @@ package de.uni.ki.p1;
 import java.io.IOException;
 import java.util.*;
 
-import javafx.application.Application;
+import javafx.application.*;
 import javafx.collections.*;
 import javafx.fxml.*;
 import javafx.scene.Scene;
@@ -35,7 +35,8 @@ public class PcMainFx extends Application
 			{
 				try
 				{
-					data.add(new Data(s));
+					Data d = new Data(s);
+					Platform.runLater(() -> data.add(d));
 				}
 				catch(IOException e)
 				{
