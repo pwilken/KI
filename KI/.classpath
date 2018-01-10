@@ -3,5 +3,8 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="con" path="org.lejos.ev3.ldt.LEJOS_EV3_LIBRARY_CONTAINER"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/Java/jdk1.8.0_131/jre/lib/ext/jfxrt.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/Java/batik-1.9/batik-1.9.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/Java/batik-1.9/lib/batik-dom-1.9.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
