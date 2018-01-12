@@ -18,6 +18,8 @@ public class MapObject {
 		RECT
 	};
 	
+	private double width;
+	private double height;
 	private ArrayList<Line> lines = new ArrayList<Line>();
 	private ArrayList<Rect> rects = new ArrayList<Rect>();
 	
@@ -25,8 +27,16 @@ public class MapObject {
 		Type nodeType;
 		Line line = new Line();
 		Rect rect = new Rect();
+		
+		// width and height
+    	NodeList nl = svgDocument.getElementsByTagName("svg");
+    	String value = nl.item(0).getAttributes().getNamedItem("height").getNodeValue();
+    	this.setHeight(Double.parseDouble(value));
+    	value = nl.item(0).getAttributes().getNamedItem("width").getNodeValue();
+    	this.setWidth(Double.parseDouble(value));
+		
 		// iterate "g" nodes
-		NodeList nl = svgDocument.getElementsByTagName("g");
+		nl = svgDocument.getElementsByTagName("g");
 		for(int i = 0; i < nl.getLength(); i++) {
 			Node node = nl.item(i);
 			System.out.println(node.getNodeName());
@@ -129,5 +139,21 @@ public class MapObject {
 
 	public void setRects(ArrayList<Rect> rects) {
 		this.rects = rects;
+	}
+
+	public double getWidth() {
+		return width;
+	}
+
+	public void setWidth(double width) {
+		this.width = width;
+	}
+
+	public double getHeight() {
+		return height;
+	}
+
+	public void setHeight(double height) {
+		this.height = height;
 	}
 }

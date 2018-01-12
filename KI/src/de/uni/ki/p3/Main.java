@@ -29,7 +29,7 @@ public class Main extends Application{
         SVGDocument svgDoc = GetSVGDocument();
         MapObject mapObject = new MapObject();
         mapObject.parseSVGDocument(svgDoc);
-        Canvas canvas = new Canvas(GetSVGWidth(svgDoc), GetSVGHeight(svgDoc));
+        Canvas canvas = new Canvas(mapObject.getWidth(), mapObject.getHeight());
         GraphicsContext gc = canvas.getGraphicsContext2D();
         MapObject.drawMapObject(gc, mapObject);
         //
@@ -45,20 +45,4 @@ public class Main extends Application{
     	return SVGParsing.toSVGDocument(filePath);
     	
     }
-    
-    public static double GetSVGHeight(SVGDocument svgDocument)
-    {
-    	NodeList nl = svgDocument.getElementsByTagName("svg");
-    	String value = nl.item(0).getAttributes().getNamedItem("height").getNodeValue();
-    	return Double.parseDouble(value);
-    }
-    
-    public static double GetSVGWidth(SVGDocument svgDocument)
-    {
-    	NodeList nl = svgDocument.getElementsByTagName("svg");
-    	String value = nl.item(0).getAttributes().getNamedItem("width").getNodeValue();
-    	return Double.parseDouble(value);
-    }
-
-    
 }
