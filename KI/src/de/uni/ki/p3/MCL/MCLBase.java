@@ -50,6 +50,10 @@ public class MCLBase {
     	scanner.setAngles(ANGLES);
     	// Map and particles will be sent from the PC
     	MCLPoseProvider mcl = new MCLPoseProvider(robot, scanner, null, 0, BORDER);
+    	
+    	// mcl contains particle, map,...
+    	
+    	
     	Navigator navigator = new Navigator(robot, mcl); 	
     	EV3NavigationModel model = new EV3NavigationModel();
     	model.setDebug(true);

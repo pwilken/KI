@@ -7,6 +7,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.svg.SVGDocument;
 
+import de.uni.ki.p3.Main;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
@@ -31,9 +32,9 @@ public class MapObject {
 		// width and height
     	NodeList nl = svgDocument.getElementsByTagName("svg");
     	String value = nl.item(0).getAttributes().getNamedItem("height").getNodeValue();
-    	this.setHeight(Double.parseDouble(value));
+    	this.setHeight(Double.parseDouble(value) * Main.DrawFactor);
     	value = nl.item(0).getAttributes().getNamedItem("width").getNodeValue();
-    	this.setWidth(Double.parseDouble(value));
+    	this.setWidth(Double.parseDouble(value) * Main.DrawFactor);
 		
 		// iterate "g" nodes
 		nl = svgDocument.getElementsByTagName("g");
@@ -67,13 +68,13 @@ public class MapObject {
 						{
 							switch(nnm.item(y).getNodeName())
 							{
-								case "x1": line.setX1(Double.parseDouble(nnm.item(y).getNodeValue()));
+								case "x1": line.setX1(Double.parseDouble(nnm.item(y).getNodeValue()) * Main.DrawFactor);
 									break;
-								case "x2": line.setX2(Double.parseDouble(nnm.item(y).getNodeValue()));
+								case "x2": line.setX2(Double.parseDouble(nnm.item(y).getNodeValue()) * Main.DrawFactor);
 									break;
-								case "y1": line.setY1(Double.parseDouble(nnm.item(y).getNodeValue()));
+								case "y1": line.setY1(Double.parseDouble(nnm.item(y).getNodeValue()) * Main.DrawFactor);
 									break;
-								case "y2": line.setY2(Double.parseDouble(nnm.item(y).getNodeValue()));
+								case "y2": line.setY2(Double.parseDouble(nnm.item(y).getNodeValue()) * Main.DrawFactor);
 									break;
 							}
 						}
@@ -81,13 +82,13 @@ public class MapObject {
 						{	
 							switch(nnm.item(y).getNodeName())
 							{
-								case "x": rect.setX(Double.parseDouble(nnm.item(y).getNodeValue()));
+								case "x": rect.setX(Double.parseDouble(nnm.item(y).getNodeValue()) * Main.DrawFactor);
 									break;
-								case "y": rect.setY(Double.parseDouble(nnm.item(y).getNodeValue()));
+								case "y": rect.setY(Double.parseDouble(nnm.item(y).getNodeValue()) * Main.DrawFactor);
 									break;
-								case "height": rect.setHeight(Double.parseDouble(nnm.item(y).getNodeValue()));
+								case "height": rect.setHeight(Double.parseDouble(nnm.item(y).getNodeValue()) * Main.DrawFactor);
 									break;
-								case "width": rect.setWidth(Double.parseDouble(nnm.item(y).getNodeValue()));
+								case "width": rect.setWidth(Double.parseDouble(nnm.item(y).getNodeValue()) * Main.DrawFactor);
 									break;
 							}
 						}
