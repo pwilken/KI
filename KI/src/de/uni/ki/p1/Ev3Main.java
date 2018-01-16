@@ -21,6 +21,9 @@ public class Ev3Main
 	{
 		Wheel wheel1 = WheeledChassis.modelWheel(new EV3LargeRegulatedMotor(MotorPort.B), 6.5).offset(-6.8);
 		Wheel wheel2 = WheeledChassis.modelWheel(new EV3LargeRegulatedMotor(MotorPort.C), 6.5).offset(6.8);
+		RegulatedMotor usMotor = new EV3MediumRegulatedMotor(MotorPort.D);
+		usMotor.rotate(90);
+		
 		Chassis chassis = new WheeledChassis(new Wheel[]{wheel1, wheel2}, 2); 
 		MovePilot pilot = new MovePilot(chassis);
 		
