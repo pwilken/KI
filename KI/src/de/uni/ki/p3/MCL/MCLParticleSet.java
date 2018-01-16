@@ -12,14 +12,12 @@ public class MCLParticleSet {
 	public void setMclParticleSet(ArrayList<MCLParticle> mclParticleSet) {
 		this.mclParticleSet = mclParticleSet;
 	}
-	
-	public int getCount()
-	{
+
+	public int getCount() {
 		return mclParticleSet.size();
 	}
-	
-	public MCLParticle getParticle(int index)
-	{
+
+	public MCLParticle getParticle(int index) {
 		return mclParticleSet.get(index);
 	}
 }
