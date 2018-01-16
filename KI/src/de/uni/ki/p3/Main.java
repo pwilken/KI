@@ -35,7 +35,8 @@ public class Main extends Application{
         GraphicsContext gc = canvas.getGraphicsContext2D();
         MapObject.drawMapObject(gc, mapObject);
         //
-        TestDraw(gc, 100, 25);
+        //TestDraw(gc, 100, 25);
+        RobotTest(gc);
         
         
         root.getChildren().add(canvas);
@@ -50,12 +51,28 @@ public class Main extends Application{
     	
     }
     
+    public static void RobotTest(GraphicsContext gc)
+    {
+    	Robot robot = new Robot(100, 25);
+    	
+    	// ToDo: Wir müssen bis auf den Hintergrund bei jedem Move einmal alles gezeichnetet entfernen
+    	// Also nur die Karte da lassen, Partikel und Bot entfernen. Die werden dann ja zwangsläufig neugezeichnet.
+    	new Thread(() -> {
+    	    for(int i = 0; i < 1000; i++)
+    	    {
+    	    	robot.move(0, 0, gc);
+    	    }
+    	}).start();
+    	
+    	
+    }
+    
     public static void TestDraw(GraphicsContext gc, float x, float y)
     {
-    	Particle.Draw(50,25, 0, 10, gc);
-    	Particle.Draw(100,25, 90, 10, gc);
-    	Particle.Draw(150,25, 180, 10, gc);
-    	Particle.Draw(200,25, 270, 10, gc);
-    	Particle.Draw(250,25, 360, 10, gc);
+    	Particle.Draw(50,25, 0, 10, gc, false);
+    	Particle.Draw(100,25, 90, 10, gc, false);
+    	Particle.Draw(150,25, 180, 10, gc, false);
+    	Particle.Draw(200,25, 270, 10, gc, false);
+    	Particle.Draw(250,25, 360, 10, gc, false);
     }
 }
