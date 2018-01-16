@@ -41,7 +41,7 @@ public class Main extends Application{
     
     public SVGDocument GetSVGDocument()
     {
-    	String filePath = "C:\\Dev\\Git\\Uni\\KI\\KI\\img\\street.svg";
+    	String filePath = "img/street.svg";
     	return SVGParsing.toSVGDocument(filePath);
     	
     }
