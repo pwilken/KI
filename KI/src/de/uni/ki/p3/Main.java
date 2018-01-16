@@ -53,9 +53,9 @@ public class Main extends Application{
     public static void TestDraw(GraphicsContext gc, float x, float y)
     {
     	Particle.Draw(50,25, 0, 10, gc);
-    	Particle.Draw(100,25, 45, 10, gc);
-    	Particle.Draw(150,25, 90, 10, gc);
-    	Particle.Draw(200,25, 135, 10, gc);
-    	Particle.Draw(250,25, 180, 10, gc);
+    	Particle.Draw(100,25, 90, 10, gc);
+    	Particle.Draw(150,25, 180, 10, gc);
+    	Particle.Draw(200,25, 270, 10, gc);
+    	Particle.Draw(250,25, 360, 10, gc);
     }
 }
