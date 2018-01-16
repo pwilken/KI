@@ -1,12 +1,14 @@
 package de.uni.ki.p3.Drawing;
 
 import de.uni.ki.p3.Main;
+import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.shape.Circle;
 import javafx.scene.transform.Rotate;
 import lejos.robotics.localization.MCLParticle;
 import lejos.robotics.localization.MCLParticleSet;
 import lejos.robotics.navigation.Pose;
+import javafx.scene.transform.Rotate;
 
 public class Particle {
 	
@@ -38,26 +40,10 @@ public class Particle {
 		double startY = (y+2.5)*Main.DrawFactor;
 		double endX = (x-2.5)*Main.DrawFactor;
 		double endY = (y+2.5)*Main.DrawFactor;
-
-		
-		//rotate
-	    double angle = Math.toRadians(heading);
-
-
 	    
-	    endX = Math.cos(angle) * (endX-startX)-Math.sin(angle)*(endY-startY)+startX;
-	    endY = Math.sin(angle)*(endX-startX)+Math.cos(angle)*(endY-startY)+startY;
-	    
-	    System.out.println("startX: "+ startX);
-	    System.out.println("endX: " + endX);
-	    System.out.println("startY: " + startY);
-	    System.out.println("endY: " + endY);
-	    
-		//endX = endX * Math.cos(heading) - endY * Math.sin(heading);
-		//endY = endY * Math.cos(heading) + endX * Math.sin(heading);
+	    Rotate r = new Rotate(heading, startX, startY);
+	    Point2D p = r.transform(endX, endY);
 		
-		//
-		
-		gc.strokeLine(startX,startY,endX,endY);
+		gc.strokeLine(startX,startY,p.getX(),p.getY());
 	}
 }
