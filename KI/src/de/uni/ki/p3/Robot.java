@@ -31,7 +31,7 @@ public class Robot implements Drawable {
         this.mcl = mcl;
     }
 	
-	public Robot(float x, float y, float heading, MapObject map, GraphicsContext gc) {
+	public Robot(float x, float y, float heading, MapObject map, GraphicsContext gc, final MCL mcl) {
 		this.x = x;
 		this.y = y;
 		this.heading = heading;
@@ -53,6 +53,8 @@ public class Robot implements Drawable {
 	}
 
 	public void move(float heading, float speed) {
+		this.heading += heading;
+		this.heading %= 360;
 //		if(heading == 0)
 //			x--;
 //		else if(heading == 90)
@@ -65,7 +67,7 @@ public class Robot implements Drawable {
         float endX = (x + speed) ;
         float endY = (y + speed) ;
 		
-        Rotate r = new Rotate(heading-225, x, y);
+        Rotate r = new Rotate(this.heading-225, x, y);
         Point2D p = r.transform(endX, endY);
         
         x = (float)p.getX();
