@@ -1,9 +1,9 @@
 package de.uni.ki.p3.MCL;
 
+import javafx.scene.canvas.GraphicsContext;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import javafx.scene.canvas.GraphicsContext;
 
 public class MCL {
 
@@ -11,9 +11,10 @@ public class MCL {
     private GraphicsContext gc;
     private int bestProbability;
     private List<Particle> particles = new ArrayList<Particle>();
+    private float noiseFactor = 0.4f;
 
-    public MCL(final int particleAmount, final GraphicsContext gc) {
-        this.particleAmount = particleAmount;
+
+    public MCL(final GraphicsContext gc) {
         this.gc = gc;
     }
 
@@ -39,5 +40,9 @@ public class MCL {
 
     public List<Particle> getParticles() {
         return particles;
+    }
+
+    public void setParticleAmount(final int particleAmount) {
+        this.particleAmount = particleAmount;
     }
 }

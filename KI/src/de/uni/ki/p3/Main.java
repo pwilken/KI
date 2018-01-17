@@ -21,8 +21,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.w3c.dom.svg.SVGDocument;
 
-import java.util.List;
-
 public class Main extends Application{
 	public static float DrawFactor = 3;
 	
@@ -38,12 +36,16 @@ public class Main extends Application{
         Canvas background = new Canvas(mapObject.getWidth(), mapObject.getHeight());
         Canvas foreground = new Canvas(mapObject.getWidth(), mapObject.getHeight());
         System.out.println("mapObject.height: " + mapObject.getHeight());
+        System.out.println("Canvas-Height: " + background.getHeight());
         GraphicsContext backgroundGC = background.getGraphicsContext2D();
         GraphicsContext foregroundGC = foreground.getGraphicsContext2D();
         mapObject.setGc(backgroundGC);
         mapObject.draw();
-        Robot robot = new Robot(0, (float) mapObject.getHeight() / 4 + 7, mapObject, foregroundGC);
+
+        MCL mcl = new MCL(foregroundGC);
+        Robot robot = new Robot(0, (float) mapObject.getHeight() / 4 + 7, mapObject, foregroundGC, mcl);
         robot.draw();
+        robot.rotateSensor(-90);
 
         VBox vBox = new VBox();
         vBox.setPadding(new Insets(10));
@@ -56,19 +58,22 @@ public class Main extends Application{
         final Label lbl = new Label("Anzahl Partikel:");
         TextField txtField = new TextField();
         Button generateParticleBtn = new Button("Generieren");
+        Button startBtn = new Button("Start");
         generateParticleBtn.setOnAction(event -> {
             try {
-                final int particleAmount = Integer.parseInt(txtField.getText());
-                MCL mcl = new MCL(particleAmount, foregroundGC);
                 Rect rect = mapObject.getRects().get(0);
-                mcl.initializeParticles(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
                 System.out.println("rect.getY: " + rect.getY());
+
+                int particleAmount = Integer.parseInt(txtField.getText());
+                mcl.setParticleAmount(particleAmount);
+                mcl.initializeParticles(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
                 mcl.getParticles().forEach(Particle::draw);
+                startBtn.setDisable(false);
             } catch (final NumberFormatException e) {
                 txtField.setText("Muss eine Ganzzahl sein!");
             }
         });
-        Button startBtn = new Button("Start");
+        startBtn.setDisable(true);
         startBtn.setOnAction(event -> {
         	RobotTest((float)mapObject.getWidth(), mapObject, robot);
         });
@@ -95,7 +100,7 @@ public class Main extends Application{
     }
     
 
-    public void RobotTest(float mapWidth, MapObject map, Robot robot)
+    private void RobotTest(float mapWidth, MapObject map, Robot robot)
     {
     	new Thread(() -> {
     	    for(int i = 0; i < mapWidth; i++)

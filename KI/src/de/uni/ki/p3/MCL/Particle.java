@@ -11,8 +11,8 @@ public class Particle implements Drawable {
 	float x, y, heading, weight;
 	private GraphicsContext gc;
 
-	public static final float WIDTH = 5;
-    public static final float HEIGHT = 5;
+	public static final float WIDTH = 2;
+    public static final float HEIGHT = 2;
 
     public Particle(final float x, final float y, final float heading, final float weight, final GraphicsContext gc) {
         this.x = x;
@@ -28,12 +28,12 @@ public class Particle implements Drawable {
     	gc.setStroke(Color.YELLOW);
     	
         gc.fillOval(
-            x * Main.DrawFactor, y * Main.DrawFactor, WIDTH * Main.DrawFactor, HEIGHT * Main.DrawFactor
+            x, y, WIDTH * Main.DrawFactor, HEIGHT * Main.DrawFactor
         );
-        float startX = (x + WIDTH / 2) * Main.DrawFactor;
-        float startY = (y + HEIGHT / 2) * Main.DrawFactor;
-        float endX = (x - WIDTH / 2) * Main.DrawFactor;
-        float endY = (y + HEIGHT / 2) * Main.DrawFactor;
+        float startX = (x + WIDTH * Main.DrawFactor/ 2);
+        float startY = (y + HEIGHT * Main.DrawFactor / 2);
+        float endX = (x - WIDTH * Main.DrawFactor / 2) ;
+        float endY = (y + HEIGHT * Main.DrawFactor / 2) ;
 
         Rotate r = new Rotate(heading, startX, startY);
         Point2D p = r.transform(endX, endY);
