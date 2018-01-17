@@ -35,7 +35,7 @@ public class Main extends Application{
         mapObject.parseSVGDocument(svgDoc);
         Canvas background = new Canvas(mapObject.getWidth(), mapObject.getHeight());
         Canvas foreground = new Canvas(mapObject.getWidth(), mapObject.getHeight());
-        GraphicsContext backgroundGC = foreground.getGraphicsContext2D();
+        GraphicsContext backgroundGC = background.getGraphicsContext2D();
         GraphicsContext foregroundGC = foreground.getGraphicsContext2D();
         MapObject.drawMapObject(backgroundGC, mapObject);
         //
@@ -82,14 +82,20 @@ public class Main extends Application{
     
     public void RobotTest(GraphicsContext gc, float mapWidth, float mapHeight)
     {
-    	Robot robot = new Robot(0, mapHeight / 4);
+    	Robot robot = new Robot(0, mapHeight / 4 + 7);
 
     	// ToDo: Wir müssen bis auf den Hintergrund bei jedem Move einmal alles gezeichnetet entfernen
     	// Also nur die Karte da lassen, Partikel und Bot entfernen. Die werden dann ja zwangsläufig neugezeichnet.
     	new Thread(() -> {
-    	    for(int i = 0; i < 100; i++)
+    	    for(int i = 0; i < mapWidth; i++)
     	    {
     	    	robot.move(180, 0, gc);
+    	    	try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
     	    }
     	}).start();
     }
