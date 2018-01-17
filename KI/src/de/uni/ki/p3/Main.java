@@ -2,6 +2,7 @@ package de.uni.ki.p3;
 
 import de.uni.ki.p3.Drawing.MapObject;
 import de.uni.ki.p3.MCL.MCL;
+import de.uni.ki.p3.MCL.MCLParticle;
 import de.uni.ki.p3.SVG.SVGParsing;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -19,6 +20,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.w3c.dom.svg.SVGDocument;
 
+import java.util.List;
+
 public class Main extends Application{
 	public static float DrawFactor = 3;
 	
@@ -28,9 +31,6 @@ public class Main extends Application{
     
     @Override
     public void start(Stage primaryStage) {
-        primaryStage.setTitle("KIsches Wunder");
-        VBox vBox = new VBox();
-        //
         SVGDocument svgDoc = GetSVGDocument();
         MapObject mapObject = new MapObject();
         mapObject.parseSVGDocument(svgDoc);
@@ -39,43 +39,45 @@ public class Main extends Application{
         GraphicsContext backgroundGC = background.getGraphicsContext2D();
         GraphicsContext foregroundGC = foreground.getGraphicsContext2D();
         MapObject.drawMapObject(backgroundGC, mapObject);
-        //
-        //TestDraw(gc, 100, 25);
+        Robot robot = new Robot(0, (float) mapObject.getHeight() / 4 + 7);
+        robot.draw(foregroundGC);
 
+        VBox vBox = new VBox();
         vBox.setPadding(new Insets(10));
         vBox.setSpacing(10);
 
         HBox hBox = new HBox();
         hBox.setSpacing(10);
         hBox.setAlignment(Pos.CENTER_LEFT);
-        final Label lbl = new Label("Anzahl Partikel:");
 
+        final Label lbl = new Label("Anzahl Partikel:");
         TextField txtField = new TextField();
         Button generateParticleBtn = new Button("Generieren");
         generateParticleBtn.setOnAction(event -> {
             try {
-                final int value = Integer.parseInt(txtField.getText());
-                MCL mcl = new MCL(value);
-                mcl.generateParticles();
+                final int particleAmount = Integer.parseInt(txtField.getText());
+                MCL mcl = new MCL(particleAmount);
+                List<MCLParticle> particles = mcl.generateParticles();
+                particles.forEach(particle -> particle.draw(foregroundGC));
             } catch (final NumberFormatException e) {
                 txtField.setText("Muss eine Ganzzahl sein!");
             }
         });
         Button startBtn = new Button("Start");
         startBtn.setOnAction(event -> {
-            RobotTest(foregroundGC, (float)mapObject.getWidth(), (float)mapObject.getHeight());
         });
         hBox.getChildren().add(lbl);
         hBox.getChildren().add(txtField);
         hBox.getChildren().add(generateParticleBtn);
         hBox.getChildren().add(startBtn);
-
         vBox.getChildren().add(hBox);
 
         Group canvasGroup = new Group();
         canvasGroup.getChildren().add(background);
         canvasGroup.getChildren().add(foreground);
         vBox.getChildren().add(canvasGroup);
+
+        primaryStage.setTitle("KIsches Wunder");
         primaryStage.setScene(new Scene(vBox));
         primaryStage.show();
     }
@@ -86,16 +88,12 @@ public class Main extends Application{
     	return SVGParsing.toSVGDocument(filePath);
     }
     
-    private void RobotTest(GraphicsContext gc, float mapWidth, float mapHeight)
+    private void RobotTest(Robot robot, float mapWidth)
     {
-    	Robot robot = new Robot(0, mapHeight / 4 + 7);
-
-    	// ToDo: Wir müssen bis auf den Hintergrund bei jedem Move einmal alles gezeichnetet entfernen
-    	// Also nur die Karte da lassen, Partikel und Bot entfernen. Die werden dann ja zwangsläufig neugezeichnet.
     	new Thread(() -> {
     	    for(int i = 0; i < mapWidth; i++)
     	    {
-                Platform.runLater(() -> robot.move(180, 0, gc));
+//                Platform.runLater(() -> robot.move(180, 0, gc));
     	    	try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {

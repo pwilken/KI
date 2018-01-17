@@ -52,7 +52,9 @@ public class Robot implements Drawable {
 
 	@Override
 	public void draw(final GraphicsContext gc) {
-		gc.setFill(Color.RED);
+        gc.clearRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
+
+        gc.setFill(Color.RED);
 		gc.setStroke(Color.BROWN);
 
 		gc.fillOval(
