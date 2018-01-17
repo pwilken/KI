@@ -42,7 +42,7 @@ public class Main extends Application{
         mapObject.setGc(backgroundGC);
         mapObject.draw();
 
-        MCL mcl = new MCL(foregroundGC);
+        MCL mcl = new MCL(foregroundGC, mapObject);
         Robot robot = new Robot(0, (float) mapObject.getHeight() / 4 + 7, mapObject, foregroundGC, mcl);
         robot.draw();
         robot.rotateSensor(-90);
