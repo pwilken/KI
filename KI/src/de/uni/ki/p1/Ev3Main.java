@@ -26,7 +26,7 @@ public class Ev3Main
 		
 		Chassis chassis = new WheeledChassis(new Wheel[]{wheel1, wheel2}, 2); 
 		MovePilot pilot = new MovePilot(chassis);
-		
+
 		NXTCam cam = new NXTCam(SensorPort.S1);
 		EV3ColorSensor col = new EV3ColorSensor(SensorPort.S2);
 		EV3UltrasonicSensor us = new EV3UltrasonicSensor(SensorPort.S4);
@@ -56,17 +56,10 @@ public class Ev3Main
 		pilot.setAngularSpeed(90);
 		
 		introMessage();
-		
-		sendData(sp, sample);
-		pilot.travel(50);
-		sendData(sp, sample);
-		pilot.rotate(-90);
-		pilot.rotate(270);
-		pilot.travel(50);
-		sendData(sp, sample);
-		pilot.rotate(180);
-		sendData(sp, sample);
-		
+
+		final MoveStrategy moveStrategy = new SmartMoveStrategy();
+		moveStrategy.move(pilot, us, usMotor, col);
+
 		col.close();
 		us.close();
 		pilot.stop();
