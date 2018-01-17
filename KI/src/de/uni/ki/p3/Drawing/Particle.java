@@ -3,8 +3,11 @@ package de.uni.ki.p3.Drawing;
 import de.uni.ki.p3.Main;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.transform.Rotate;
+import sun.print.PrinterJobWrapper;
 import javafx.scene.transform.Rotate;
 import de.uni.ki.p3.MCL.*;
 
@@ -35,6 +38,9 @@ public class Particle {
 		if (robot) {
 			ovalWidth *= 2;
 			ovalHeight *= 2;
+			
+			gc.setFill(Color.RED);
+			gc.setStroke(Color.BROWN);
 		}
 
 		gc.fillOval(x * Main.DrawFactor, y * Main.DrawFactor, ovalWidth * Main.DrawFactor,
