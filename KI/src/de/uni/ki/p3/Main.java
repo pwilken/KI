@@ -1,19 +1,21 @@
 package de.uni.ki.p3;
 
-import org.w3c.dom.NodeList;
-import org.w3c.dom.svg.SVGDocument;
-
 import de.uni.ki.p3.Drawing.MapObject;
 import de.uni.ki.p3.Drawing.Particle;
 import de.uni.ki.p3.SVG.SVGParsing;
 import javafx.application.Application;
-import javafx.scene.Group;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.ArcType;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.w3c.dom.svg.SVGDocument;
 
 public class Main extends Application{
 	public static float DrawFactor = 3;
@@ -25,8 +27,7 @@ public class Main extends Application{
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("KIsches Wunder");
-        Group root = new Group();
-        
+        VBox vBox = new VBox();
         //
         SVGDocument svgDoc = GetSVGDocument();
         MapObject mapObject = new MapObject();
@@ -36,11 +37,32 @@ public class Main extends Application{
         MapObject.drawMapObject(gc, mapObject);
         //
         //TestDraw(gc, 100, 25);
-        RobotTest(gc);
-        
-        
-        root.getChildren().add(canvas);
-        primaryStage.setScene(new Scene(root));
+
+        vBox.setPadding(new Insets(10));
+        vBox.setSpacing(10);
+
+        HBox hBox = new HBox();
+        hBox.setSpacing(10);
+        hBox.setAlignment(Pos.CENTER_LEFT);
+        final Label lbl = new Label("Anzahl Partikel:");
+
+        TextField txtField = new TextField();
+        Button btn = new Button("Generieren");
+        btn.setOnAction(event -> {
+            try {
+                final int value = Integer.parseInt(txtField.getText());
+                RobotTest(gc);
+            } catch (final NumberFormatException e) {
+                txtField.setText("Muss eine Ganzzahl sein!");
+            }
+        });
+        hBox.getChildren().add(lbl);
+        hBox.getChildren().add(txtField);
+        hBox.getChildren().add(btn);
+
+        vBox.getChildren().add(hBox);
+        vBox.getChildren().add(canvas);
+        primaryStage.setScene(new Scene(vBox));
         primaryStage.show();
     }
     
@@ -51,7 +73,7 @@ public class Main extends Application{
     	
     }
     
-    public static void RobotTest(GraphicsContext gc)
+    public void RobotTest(GraphicsContext gc)
     {
     	Robot robot = new Robot(100, 25);
     	
