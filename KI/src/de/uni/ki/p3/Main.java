@@ -1,9 +1,10 @@
 package de.uni.ki.p3;
 
 import de.uni.ki.p3.Drawing.MapObject;
-import de.uni.ki.p3.Drawing.Particle;
+import de.uni.ki.p3.MCL.MCL;
 import de.uni.ki.p3.SVG.SVGParsing;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -50,19 +51,24 @@ public class Main extends Application{
         final Label lbl = new Label("Anzahl Partikel:");
 
         TextField txtField = new TextField();
-        Button btn = new Button("Generieren");
-        btn.setOnAction(event -> {
+        Button generateParticleBtn = new Button("Generieren");
+        generateParticleBtn.setOnAction(event -> {
             try {
                 final int value = Integer.parseInt(txtField.getText());
-                RobotTest(foregroundGC, (float)mapObject.getWidth(), (float)mapObject.getHeight());
-
+                MCL mcl = new MCL(value);
+                mcl.generateParticles();
             } catch (final NumberFormatException e) {
                 txtField.setText("Muss eine Ganzzahl sein!");
             }
         });
+        Button startBtn = new Button("Start");
+        startBtn.setOnAction(event -> {
+            RobotTest(foregroundGC, (float)mapObject.getWidth(), (float)mapObject.getHeight());
+        });
         hBox.getChildren().add(lbl);
         hBox.getChildren().add(txtField);
-        hBox.getChildren().add(btn);
+        hBox.getChildren().add(generateParticleBtn);
+        hBox.getChildren().add(startBtn);
 
         vBox.getChildren().add(hBox);
 
@@ -74,13 +80,13 @@ public class Main extends Application{
         primaryStage.show();
     }
     
-    public SVGDocument GetSVGDocument()
+    private SVGDocument GetSVGDocument()
     {
     	String filePath = "img/street.svg";
     	return SVGParsing.toSVGDocument(filePath);
     }
     
-    public void RobotTest(GraphicsContext gc, float mapWidth, float mapHeight)
+    private void RobotTest(GraphicsContext gc, float mapWidth, float mapHeight)
     {
     	Robot robot = new Robot(0, mapHeight / 4 + 7);
 
@@ -89,23 +95,13 @@ public class Main extends Application{
     	new Thread(() -> {
     	    for(int i = 0; i < mapWidth; i++)
     	    {
-    	    	robot.move(180, 0, gc);
+                Platform.runLater(() -> robot.move(180, 0, gc));
     	    	try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
     	    }
     	}).start();
-    }
-    
-    public static void TestDraw(GraphicsContext gc, float x, float y)
-    {
-    	Particle.Draw(50,25, 0, 10, gc, false);
-    	Particle.Draw(100,25, 90, 10, gc, false);
-    	Particle.Draw(150,25, 180, 10, gc, false);
-    	Particle.Draw(200,25, 270, 10, gc, false);
-    	Particle.Draw(250,25, 360, 10, gc, false);
     }
 }
