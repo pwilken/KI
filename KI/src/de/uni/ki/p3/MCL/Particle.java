@@ -4,6 +4,7 @@ import de.uni.ki.p3.Drawing.Drawable;
 import de.uni.ki.p3.Main;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 import javafx.scene.transform.Rotate;
 
 public class Particle implements Drawable {
@@ -23,6 +24,9 @@ public class Particle implements Drawable {
 
     @Override
     public void draw() {
+    	gc.setFill(Color.BLUE);
+    	gc.setStroke(Color.YELLOW);
+    	
         gc.fillOval(
             x * Main.DrawFactor, y * Main.DrawFactor, WIDTH * Main.DrawFactor, HEIGHT * Main.DrawFactor
         );

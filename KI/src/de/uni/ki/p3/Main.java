@@ -1,6 +1,7 @@
 package de.uni.ki.p3;
 
 import de.uni.ki.p3.Drawing.MapObject;
+import de.uni.ki.p3.Drawing.Rect;
 import de.uni.ki.p3.MCL.MCL;
 import de.uni.ki.p3.MCL.Particle;
 import de.uni.ki.p3.SVG.SVGParsing;
@@ -36,6 +37,7 @@ public class Main extends Application{
         mapObject.parseSVGDocument(svgDoc);
         Canvas background = new Canvas(mapObject.getWidth(), mapObject.getHeight());
         Canvas foreground = new Canvas(mapObject.getWidth(), mapObject.getHeight());
+        System.out.println("mapObject.height: " + mapObject.getHeight());
         GraphicsContext backgroundGC = background.getGraphicsContext2D();
         GraphicsContext foregroundGC = foreground.getGraphicsContext2D();
         mapObject.setGc(backgroundGC);
@@ -58,7 +60,9 @@ public class Main extends Application{
             try {
                 final int particleAmount = Integer.parseInt(txtField.getText());
                 MCL mcl = new MCL(particleAmount, foregroundGC);
-                mcl.initializeParticles();
+                Rect rect = mapObject.getRects().get(0);
+                mcl.initializeParticles(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
+                System.out.println("rect.getY: " + rect.getY());
                 mcl.getParticles().forEach(Particle::draw);
             } catch (final NumberFormatException e) {
                 txtField.setText("Muss eine Ganzzahl sein!");
