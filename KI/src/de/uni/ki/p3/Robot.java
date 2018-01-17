@@ -53,14 +53,23 @@ public class Robot implements Drawable {
 	}
 
 	public void move(float heading, float speed) {
-		if(heading == 0)
-			x--;
-		else if(heading == 90)
-			y--;
-		else if(heading == 180)
-			x++;
-		else
-			y++;
+//		if(heading == 0)
+//			x--;
+//		else if(heading == 90)
+//			y--;
+//		else if(heading == 180)
+//			x++;
+//		else
+//			y++;
+		
+        float endX = (x + speed) ;
+        float endY = (y + speed) ;
+		
+        Rotate r = new Rotate(heading-225, x, y);
+        Point2D p = r.transform(endX, endY);
+        
+        x = (float)p.getX();
+        y = (float)p.getY();
 		
 		// we just draw the robot if we know the position (or we are at least quite sure)
 		// ToDo: Nach jedem Movement müssen die Partikel neu generiert werden
