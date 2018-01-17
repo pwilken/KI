@@ -3,15 +3,15 @@ package de.uni.ki.p3;
 import de.uni.ki.p3.Drawing.Drawable;
 import de.uni.ki.p3.Drawing.Line;
 import de.uni.ki.p3.Drawing.MapObject;
-import de.uni.ki.p3.MCL.MCLParticle;
+import de.uni.ki.p3.MCL.Particle;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Rotate;
 
 public class Robot implements Drawable {
-    public static final float WIDTH = MCLParticle.WIDTH * 2;
-    public static final float HEIGHT = MCLParticle.HEIGHT * 2;
+    public static final float WIDTH = Particle.WIDTH * 2;
+    public static final float HEIGHT = Particle.HEIGHT * 2;
 	private float x = -1;
 	private float y = -1;
 	private float measure = -1;

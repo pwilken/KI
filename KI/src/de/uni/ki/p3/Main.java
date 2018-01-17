@@ -2,7 +2,7 @@ package de.uni.ki.p3;
 
 import de.uni.ki.p3.Drawing.MapObject;
 import de.uni.ki.p3.MCL.MCL;
-import de.uni.ki.p3.MCL.MCLParticle;
+import de.uni.ki.p3.MCL.Particle;
 import de.uni.ki.p3.SVG.SVGParsing;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -57,9 +57,9 @@ public class Main extends Application{
         generateParticleBtn.setOnAction(event -> {
             try {
                 final int particleAmount = Integer.parseInt(txtField.getText());
-                MCL mcl = new MCL(particleAmount);
-                List<MCLParticle> particles = mcl.generateParticles(foregroundGC);
-                particles.forEach(MCLParticle::draw);
+                MCL mcl = new MCL(particleAmount, foregroundGC);
+                mcl.initializeParticles();
+                mcl.getParticles().forEach(Particle::draw);
             } catch (final NumberFormatException e) {
                 txtField.setText("Muss eine Ganzzahl sein!");
             }

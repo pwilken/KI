@@ -6,14 +6,14 @@ import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.transform.Rotate;
 
-public class MCLParticle implements Drawable {
+public class Particle implements Drawable {
 	float x, y, heading, weight;
 	private GraphicsContext gc;
 
 	public static final float WIDTH = 5;
     public static final float HEIGHT = 5;
 
-    public MCLParticle(final float x, final float y, final float heading, final float weight, final GraphicsContext gc) {
+    public Particle(final float x, final float y, final float heading, final float weight, final GraphicsContext gc) {
         this.x = x;
         this.y = y;
         this.heading = heading;
