@@ -43,7 +43,7 @@ public class Main extends Application{
         mapObject.draw();
 
         MCL mcl = new MCL(foregroundGC, mapObject);
-        Robot robot = new Robot(0, (float) mapObject.getHeight() / 4 + 7, mapObject, foregroundGC, mcl);
+        Robot robot = new Robot(0, (float) mapObject.getHeight() / 4 + 7, 180, mapObject, foregroundGC, mcl);
         robot.draw();
         robot.rotateSensor(-90);
 
@@ -105,7 +105,7 @@ public class Main extends Application{
     	new Thread(() -> {
     	    for(int i = 0; i < mapWidth; i++)
     	    {
-                Platform.runLater(() -> robot.move(195, 1));
+                Platform.runLater(() -> robot.move(0, 1));
     	    	try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
