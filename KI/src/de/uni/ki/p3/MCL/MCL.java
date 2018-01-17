@@ -3,6 +3,8 @@ package de.uni.ki.p3.MCL;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.scene.canvas.GraphicsContext;
+
 public class MCL {
 
     private int particleAmount;
@@ -12,13 +14,13 @@ public class MCL {
         this.particleAmount = particleAmount;
     }
 
-    public List<MCLParticle> generateParticles() {
+    public List<MCLParticle> generateParticles(GraphicsContext gc) {
         float initialWeight = 0.1f;
 
         List<MCLParticle> particles = new ArrayList<>();
         for (int i = 0; i < particleAmount; i++) {
             float heading = (int) (Math.random() * 360);
-            MCLParticle particle = new MCLParticle(0, 0, heading, initialWeight);
+            MCLParticle particle = new MCLParticle(0, 0, heading, initialWeight, gc);
             particles.add(particle);
         }
 

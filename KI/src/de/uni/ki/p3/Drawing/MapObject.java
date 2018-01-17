@@ -109,6 +109,11 @@ public class MapObject {
 			double x2 = line.getX2();
 			double y1 = line.getY1();
 			double y2 = line.getY2();
+			System.out.println("Line");
+			System.out.println("x1: " + x1);
+			System.out.println("x2: " + x2);
+			System.out.println("y1: " + y1);
+			System.out.println("y2: " + y2);
 			gc.strokePolyline(new double[] { x1, x2 }, new double[] { y1, y2 }, 2);
 		}
 

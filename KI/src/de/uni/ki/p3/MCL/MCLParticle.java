@@ -8,19 +8,21 @@ import javafx.scene.transform.Rotate;
 
 public class MCLParticle implements Drawable {
 	float x, y, heading, weight;
+	private GraphicsContext gc;
 
 	public static final float WIDTH = 5;
     public static final float HEIGHT = 5;
 
-    public MCLParticle(final float x, final float y, final float heading, final float weight) {
+    public MCLParticle(final float x, final float y, final float heading, final float weight, GraphicsContext gc) {
         this.x = x;
         this.y = y;
         this.heading = heading;
         this.weight = weight;
+        this.gc = gc;
     }
 
     @Override
-    public void draw(final GraphicsContext gc) {
+    public void draw() {
         gc.fillOval(
             x * Main.DrawFactor, y * Main.DrawFactor, WIDTH * Main.DrawFactor, HEIGHT * Main.DrawFactor
         );

@@ -39,8 +39,8 @@ public class Main extends Application{
         GraphicsContext backgroundGC = background.getGraphicsContext2D();
         GraphicsContext foregroundGC = foreground.getGraphicsContext2D();
         MapObject.drawMapObject(backgroundGC, mapObject);
-        Robot robot = new Robot(0, (float) mapObject.getHeight() / 4 + 7);
-        robot.draw(foregroundGC);
+        Robot robot = new Robot(0, (float) mapObject.getHeight() / 4 + 7, mapObject, foregroundGC);
+        robot.draw();
 
         VBox vBox = new VBox();
         vBox.setPadding(new Insets(10));
@@ -55,16 +55,18 @@ public class Main extends Application{
         Button generateParticleBtn = new Button("Generieren");
         generateParticleBtn.setOnAction(event -> {
             try {
+                final int value = Integer.parseInt(txtField.getText());
                 final int particleAmount = Integer.parseInt(txtField.getText());
                 MCL mcl = new MCL(particleAmount);
-                List<MCLParticle> particles = mcl.generateParticles();
-                particles.forEach(particle -> particle.draw(foregroundGC));
+                List<MCLParticle> particles = mcl.generateParticles(foregroundGC);
+                particles.forEach(particle -> particle.draw());
             } catch (final NumberFormatException e) {
                 txtField.setText("Muss eine Ganzzahl sein!");
             }
         });
         Button startBtn = new Button("Start");
         startBtn.setOnAction(event -> {
+        	RobotTest((float)mapObject.getWidth(), mapObject, robot);
         });
         hBox.getChildren().add(lbl);
         hBox.getChildren().add(txtField);
@@ -88,12 +90,13 @@ public class Main extends Application{
     	return SVGParsing.toSVGDocument(filePath);
     }
     
-    private void RobotTest(Robot robot, float mapWidth)
+
+    public void RobotTest(float mapWidth, MapObject map, Robot robot)
     {
     	new Thread(() -> {
     	    for(int i = 0; i < mapWidth; i++)
     	    {
-//                Platform.runLater(() -> robot.move(180, 0, gc));
+                Platform.runLater(() -> robot.move(180, 0));
     	    	try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
