@@ -6,6 +6,7 @@ import de.uni.ki.p3.SVG.SVGParsing;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -32,9 +33,11 @@ public class Main extends Application{
         SVGDocument svgDoc = GetSVGDocument();
         MapObject mapObject = new MapObject();
         mapObject.parseSVGDocument(svgDoc);
-        Canvas canvas = new Canvas(mapObject.getWidth(), mapObject.getHeight());
-        GraphicsContext gc = canvas.getGraphicsContext2D();
-        MapObject.drawMapObject(gc, mapObject);
+        Canvas background = new Canvas(mapObject.getWidth(), mapObject.getHeight());
+        Canvas foreground = new Canvas(mapObject.getWidth(), mapObject.getHeight());
+        GraphicsContext backgroundGC = foreground.getGraphicsContext2D();
+        GraphicsContext foregroundGC = foreground.getGraphicsContext2D();
+        MapObject.drawMapObject(backgroundGC, mapObject);
         //
         //TestDraw(gc, 100, 25);
 
@@ -51,7 +54,7 @@ public class Main extends Application{
         btn.setOnAction(event -> {
             try {
                 final int value = Integer.parseInt(txtField.getText());
-                RobotTest(gc);
+                RobotTest(foregroundGC);
             } catch (final NumberFormatException e) {
                 txtField.setText("Muss eine Ganzzahl sein!");
             }
@@ -61,7 +64,11 @@ public class Main extends Application{
         hBox.getChildren().add(btn);
 
         vBox.getChildren().add(hBox);
-        vBox.getChildren().add(canvas);
+
+        Group canvasGroup = new Group();
+        canvasGroup.getChildren().add(background);
+        canvasGroup.getChildren().add(foreground);
+        vBox.getChildren().add(canvasGroup);
         primaryStage.setScene(new Scene(vBox));
         primaryStage.show();
     }
@@ -70,13 +77,12 @@ public class Main extends Application{
     {
     	String filePath = "img/street.svg";
     	return SVGParsing.toSVGDocument(filePath);
-    	
     }
     
     public void RobotTest(GraphicsContext gc)
     {
     	Robot robot = new Robot(100, 25);
-    	
+
     	// ToDo: Wir müssen bis auf den Hintergrund bei jedem Move einmal alles gezeichnetet entfernen
     	// Also nur die Karte da lassen, Partikel und Bot entfernen. Die werden dann ja zwangsläufig neugezeichnet.
     	new Thread(() -> {
@@ -85,8 +91,6 @@ public class Main extends Application{
     	    	robot.move(0, 0, gc);
     	    }
     	}).start();
-    	
-    	
     }
     
     public static void TestDraw(GraphicsContext gc, float x, float y)
