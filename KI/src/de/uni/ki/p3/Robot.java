@@ -37,6 +37,7 @@ public class Robot implements Drawable {
 		this.heading = heading;
 		this.map = map;
 		this.gc = gc;
+		this.mcl = mcl;
 	}
 
 

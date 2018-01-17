@@ -1,7 +1,9 @@
 package de.uni.ki.p3.MCL;
 
 import de.uni.ki.p3.Drawing.MapObject;
+import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.transform.Rotate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,14 +49,47 @@ public class MCL {
 
                 particle.heading += heading;
                 particle.heading %= 360;
-                particle.x += speed;
+                
+                // particle movement
+                float endX = (particle.x + speed) ;
+                float endY = (particle.y + speed) ;
+                Rotate r = new Rotate(particle.heading-225, particle.x, particle.y);
+                Point2D p = r.transform(endX, endY);
+                particle.x = (float)p.getX();
+                particle.y = (float)p.getY();
         });
 
         resample();
+        
+        for(Particle p: particles)
+        	p.draw();
     }
 
     private void resample() {
+    	int N = particles.size();
+		List<Particle> new_particles = new ArrayList<Particle>();
+		
+		double incr = 0;
+		int index = 0;
 
+		for (int i = 0; i < N; i++) {
+			incr += particles.get(i).weight;
+		}
+
+		incr = incr / 2.0 / N;
+		double beta = incr;
+
+		for (int i = 0; i < N; i++) {
+			while (beta > particles.get(index).weight) {
+				beta -= particles.get(index).weight;
+				index = (index + 1) % N;
+			}
+
+			beta += incr;
+			new_particles.add((Particle)particles.get(index));
+			
+		}
+		particles = new_particles;
     }
 
     public List<Particle> getParticles() {
