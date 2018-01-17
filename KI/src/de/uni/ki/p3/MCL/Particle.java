@@ -41,7 +41,8 @@ public class Particle implements Drawable, Cloneable {
         float distance = -1 ;
         for(Line l : map.getLines())
         {
-            if(x*Main.DrawFactor > l.getX1() && x*Main.DrawFactor < l.getX2() && l.getY1()+l.getY2() > 0)
+        	// ToDo: wir müssen von der Partikel-Perspektive aus gerade aus gucken. Wir gucken bisher nur nach oben
+            if(x*Main.DrawFactor > l.getX1() && x*Main.DrawFactor < l.getX2())
             {
                 distance = (float)(y*Main.DrawFactor - l.getY2());
                 System.out.println("Particle-Distance: " + distance);
