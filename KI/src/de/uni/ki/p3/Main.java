@@ -51,7 +51,7 @@ public class Main extends Application{
         btn.setOnAction(event -> {
             try {
                 final int value = Integer.parseInt(txtField.getText());
-                RobotTest(gc);
+                RobotTest(gc, (float)mapObject.getWidth(), (float)mapObject.getHeight());
             } catch (final NumberFormatException e) {
                 txtField.setText("Muss eine Ganzzahl sein!");
             }
@@ -70,19 +70,18 @@ public class Main extends Application{
     {
     	String filePath = "img/street.svg";
     	return SVGParsing.toSVGDocument(filePath);
-    	
     }
     
-    public void RobotTest(GraphicsContext gc)
+    public void RobotTest(GraphicsContext gc, float mapWidth, float mapHeight)
     {
-    	Robot robot = new Robot(100, 25);
+    	Robot robot = new Robot(0, mapHeight / 4);
     	
     	// ToDo: Wir müssen bis auf den Hintergrund bei jedem Move einmal alles gezeichnetet entfernen
     	// Also nur die Karte da lassen, Partikel und Bot entfernen. Die werden dann ja zwangsläufig neugezeichnet.
     	new Thread(() -> {
-    	    for(int i = 0; i < 1000; i++)
+    	    for(int i = 0; i < 100; i++)
     	    {
-    	    	robot.move(0, 0, gc);
+    	    	robot.move(180, 0, gc);
     	    }
     	}).start();
     	
