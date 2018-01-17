@@ -75,8 +75,8 @@ public class Robot implements Drawable {
 		// ToDo: Nach jedem Movement müssen die Partikel neu generiert werden
 		if (x != -1 && y != -1) {
 			draw();
-			measure();
-			mcl.resample();
+            float robotDistance = measure();
+            mcl.mcl(robotDistance, heading, speed);
 		}
 	}
 
@@ -102,22 +102,26 @@ public class Robot implements Drawable {
         }).start();
     }
 
-	public void measure() {
+	public float measure() {
 		boolean infinity = true;
-		
+
+		float distance = -1 ;
+
 		for(Line l : map.getLines())
 		{
 			if(x*Main.DrawFactor > l.getX1() && x*Main.DrawFactor < l.getX2() && l.getY1()+l.getY2() > 0)
 			{
-				float distance = (float)(l.getY2() - y);
+				distance = (float)(l.getY2() - y);
 				System.out.println("Distance: " + distance);
 				infinity = false;
 				break;
 			}
 		}
-		
+
 		if(infinity)
 			System.out.println("Distance: infinity");
+
+		return infinity ? -1 : distance;
 	}
 
 	@Override
