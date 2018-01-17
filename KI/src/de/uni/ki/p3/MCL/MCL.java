@@ -8,26 +8,30 @@ import javafx.scene.canvas.GraphicsContext;
 public class MCL {
 
     private int particleAmount;
+    private GraphicsContext gc;
     private int bestProbability;
+    private List<Particle> particles;
 
-    public MCL(final int particleAmount) {
+    public MCL(final int particleAmount, final GraphicsContext gc) {
         this.particleAmount = particleAmount;
+        this.gc = gc;
     }
 
-    public List<MCLParticle> generateParticles(GraphicsContext gc) {
+    public void initializeParticles() {
         float initialWeight = 0.1f;
 
-        List<MCLParticle> particles = new ArrayList<>();
         for (int i = 0; i < particleAmount; i++) {
             float heading = (int) (Math.random() * 360);
-            MCLParticle particle = new MCLParticle(0, 0, heading, initialWeight, gc);
+            Particle particle = new Particle(0, 0, heading, initialWeight, gc);
             particles.add(particle);
         }
-
-        return particles;
     }
 
-    public void resample(final List<MCLParticle> particles) {
+    public void resample() {
 
+    }
+
+    public List<Particle> getParticles() {
+        return particles;
     }
 }

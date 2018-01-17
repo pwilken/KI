@@ -1,19 +1,22 @@
 package de.uni.ki.p3;
 
-import org.w3c.dom.svg.SVGDocument;
-
-import de.uni.ki.p3.Drawing.*;
-import de.uni.ki.p3.MCL.MCLParticle;
+import de.uni.ki.p3.Drawing.Drawable;
+import de.uni.ki.p3.Drawing.Line;
+import de.uni.ki.p3.Drawing.MapObject;
+import de.uni.ki.p3.MCL.Particle;
+import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.transform.Rotate;
 
 public class Robot implements Drawable {
-    public static final float WIDTH = MCLParticle.WIDTH * 2;
-    public static final float HEIGHT = MCLParticle.HEIGHT * 2;
+    public static final float WIDTH = Particle.WIDTH * 2;
+    public static final float HEIGHT = Particle.HEIGHT * 2;
 	private float x = -1;
 	private float y = -1;
 	private float measure = -1;
 	private float heading = 0; //direction in which the bot is looking
+    private float sensorHeading = 90;
 	private MapObject map;
 	private GraphicsContext gc;
 
@@ -91,5 +94,14 @@ public class Robot implements Drawable {
 		gc.fillOval(
             x * Main.DrawFactor, y * Main.DrawFactor, WIDTH * Main.DrawFactor, HEIGHT * Main.DrawFactor
         );
+        float startX = (x + WIDTH / 2) * Main.DrawFactor;
+        float startY = (y + HEIGHT / 2) * Main.DrawFactor;
+        float endX = (x - WIDTH / 2) * Main.DrawFactor;
+        float endY = (y + HEIGHT / 2) * Main.DrawFactor;
+
+        Rotate r = new Rotate(sensorHeading, startX, startY);
+        Point2D p = r.transform(endX, endY);
+
+        gc.strokeLine(startX, startY, p.getX(), p.getY());
 	}
 }
