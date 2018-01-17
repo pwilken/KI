@@ -1,6 +1,7 @@
 package de.uni.ki.p3;
 
 import de.uni.ki.p3.Drawing.MapObject;
+import de.uni.ki.p3.Drawing.Rect;
 import de.uni.ki.p3.MCL.MCL;
 import de.uni.ki.p3.MCL.Particle;
 import de.uni.ki.p3.SVG.SVGParsing;
@@ -34,6 +35,8 @@ public class Main extends Application{
         mapObject.parseSVGDocument(svgDoc);
         Canvas background = new Canvas(mapObject.getWidth(), mapObject.getHeight());
         Canvas foreground = new Canvas(mapObject.getWidth(), mapObject.getHeight());
+        System.out.println("mapObject.height: " + mapObject.getHeight());
+        System.out.println("Canvas-Height: " + background.getHeight());
         GraphicsContext backgroundGC = background.getGraphicsContext2D();
         GraphicsContext foregroundGC = foreground.getGraphicsContext2D();
         mapObject.setGc(backgroundGC);
@@ -58,9 +61,12 @@ public class Main extends Application{
         Button startBtn = new Button("Start");
         generateParticleBtn.setOnAction(event -> {
             try {
+                Rect rect = mapObject.getRects().get(0);
+                System.out.println("rect.getY: " + rect.getY());
+
                 int particleAmount = Integer.parseInt(txtField.getText());
                 mcl.setParticleAmount(particleAmount);
-                mcl.initializeParticles();
+                mcl.initializeParticles(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
                 mcl.getParticles().forEach(Particle::draw);
                 startBtn.setDisable(false);
             } catch (final NumberFormatException e) {

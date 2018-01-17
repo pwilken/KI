@@ -12,8 +12,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.transform.Rotate;
 
 public class Robot implements Drawable {
-    public static final float WIDTH = Particle.WIDTH * 2;
-    public static final float HEIGHT = Particle.HEIGHT * 2;
+    public static final float WIDTH = Particle.WIDTH * 5;
+    public static final float HEIGHT = Particle.HEIGHT * 5;
 	private float x = -1;
 	private float y = -1;
 	private float measure = -1;
