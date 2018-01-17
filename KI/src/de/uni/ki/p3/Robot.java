@@ -21,7 +21,8 @@ public class Robot {
 	}
 
 	public void move(float heading, float speed, GraphicsContext gc) {
-
+		gc.clearRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
+		
 		if(heading == 0)
 			positionX--;
 		else if(heading == 90)
