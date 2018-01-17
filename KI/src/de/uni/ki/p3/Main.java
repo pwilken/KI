@@ -105,9 +105,9 @@ public class Main extends Application{
     	new Thread(() -> {
     	    for(int i = 0; i < mapWidth; i++)
     	    {
-                Platform.runLater(() -> robot.move(0, 1));
+                Platform.runLater(() -> robot.move(0, 2));
     	    	try {
-					Thread.sleep(100);
+					Thread.sleep(200);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}

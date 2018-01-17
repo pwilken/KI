@@ -108,22 +108,21 @@ public class Robot implements Drawable {
 	public float measure() {
 		boolean infinity = true;
 
-		float distance = -1 ;
+		float distance = -1;
 
 		for(Line l : map.getLines())
-		{
-			if(x*Main.DrawFactor > l.getX1() && x*Main.DrawFactor < l.getX2() && l.getY1()+l.getY2() > 0)
 			{
-				distance = (float)(l.getY2() - y);
-				System.out.println("Distance: " + distance);
-				infinity = false;
-				break;
+				if(x*Main.DrawFactor > l.getX1() && x*Main.DrawFactor < l.getX2() && l.getY1()+l.getY2() > 0)
+				{
+					distance = (float)(y*Main.DrawFactor - l.getY2());
+					infinity = false;
+					break;
+				}
 			}
-		}
 
-		if(infinity)
-			System.out.println("Distance: infinity");
-
+//		if(infinity)
+//			System.out.println("Distance: infinity");
+		System.out.println("Robot-Distance: " + distance);
 		return infinity ? -1 : distance;
 	}
 
