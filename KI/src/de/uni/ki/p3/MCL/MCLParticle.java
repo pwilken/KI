@@ -13,7 +13,7 @@ public class MCLParticle implements Drawable {
 	public static final float WIDTH = 5;
     public static final float HEIGHT = 5;
 
-    public MCLParticle(final float x, final float y, final float heading, final float weight, GraphicsContext gc) {
+    public MCLParticle(final float x, final float y, final float heading, final float weight, final GraphicsContext gc) {
         this.x = x;
         this.y = y;
         this.heading = heading;

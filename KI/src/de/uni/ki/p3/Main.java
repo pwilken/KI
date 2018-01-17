@@ -38,7 +38,8 @@ public class Main extends Application{
         Canvas foreground = new Canvas(mapObject.getWidth(), mapObject.getHeight());
         GraphicsContext backgroundGC = background.getGraphicsContext2D();
         GraphicsContext foregroundGC = foreground.getGraphicsContext2D();
-        MapObject.drawMapObject(backgroundGC, mapObject);
+        mapObject.setGc(backgroundGC);
+        mapObject.draw();
         Robot robot = new Robot(0, (float) mapObject.getHeight() / 4 + 7, mapObject, foregroundGC);
         robot.draw();
 
@@ -55,11 +56,10 @@ public class Main extends Application{
         Button generateParticleBtn = new Button("Generieren");
         generateParticleBtn.setOnAction(event -> {
             try {
-                final int value = Integer.parseInt(txtField.getText());
                 final int particleAmount = Integer.parseInt(txtField.getText());
                 MCL mcl = new MCL(particleAmount);
                 List<MCLParticle> particles = mcl.generateParticles(foregroundGC);
-                particles.forEach(particle -> particle.draw());
+                particles.forEach(MCLParticle::draw);
             } catch (final NumberFormatException e) {
                 txtField.setText("Muss eine Ganzzahl sein!");
             }

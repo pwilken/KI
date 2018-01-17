@@ -1,18 +1,15 @@
 package de.uni.ki.p3.Drawing;
 
-import java.util.ArrayList;
-
+import de.uni.ki.p3.Main;
+import javafx.scene.canvas.GraphicsContext;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.svg.SVGDocument;
 
-import de.uni.ki.p3.Main;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.ArcType;
+import java.util.ArrayList;
 
-public class MapObject {
+public class MapObject implements Drawable {
 	enum Type {
 		NONE, LINE, RECT
 	};
@@ -22,7 +19,13 @@ public class MapObject {
 	private ArrayList<Line> lines = new ArrayList<Line>();
 	private ArrayList<Rect> rects = new ArrayList<Rect>();
 
-	public void parseSVGDocument(SVGDocument svgDocument) {
+	private GraphicsContext gc;
+
+    public void setGc(final GraphicsContext gc) {
+        this.gc = gc;
+    }
+
+    public void parseSVGDocument(SVGDocument svgDocument) {
 		Type nodeType;
 		Line line = new Line();
 		Rect rect = new Rect();
@@ -102,32 +105,32 @@ public class MapObject {
 		}
 	}
 
-	public static void drawMapObject(GraphicsContext gc, MapObject mapObject) {
+	@Override
+	public void draw() {
+        for (Line line : lines) {
+            double x1 = line.getX1();
+            double x2 = line.getX2();
+            double y1 = line.getY1();
+            double y2 = line.getY2();
+            System.out.println("Line");
+            System.out.println("x1: " + x1);
+            System.out.println("x2: " + x2);
+            System.out.println("y1: " + y1);
+            System.out.println("y2: " + y2);
+            gc.strokePolyline(new double[] { x1, x2 }, new double[] { y1, y2 }, 2);
+        }
 
-		for (Line line : mapObject.getLines()) {
-			double x1 = line.getX1();
-			double x2 = line.getX2();
-			double y1 = line.getY1();
-			double y2 = line.getY2();
-			System.out.println("Line");
-			System.out.println("x1: " + x1);
-			System.out.println("x2: " + x2);
-			System.out.println("y1: " + y1);
-			System.out.println("y2: " + y2);
-			gc.strokePolyline(new double[] { x1, x2 }, new double[] { y1, y2 }, 2);
-		}
-
-		for (Rect rect : mapObject.getRects()) {
-			double x = rect.getX();
-			double y = rect.getY();
-			double width = rect.getWidth();
-			double height = rect.getHeight();
-			System.out.println("x: " + x);
-			System.out.println("y: " + y);
-			System.out.println("width: " + width);
-			System.out.println("height: " + height);
-			gc.fillRect(x, y, width, height);
-		}
+        for (Rect rect : rects) {
+            double x = rect.getX();
+            double y = rect.getY();
+            double width = rect.getWidth();
+            double height = rect.getHeight();
+            System.out.println("x: " + x);
+            System.out.println("y: " + y);
+            System.out.println("width: " + width);
+            System.out.println("height: " + height);
+            gc.fillRect(x, y, width, height);
+        }
 	}
 
 	public ArrayList<Line> getLines() {
