@@ -1,74 +1,85 @@
 package de.uni.ki.p3.MCL;
 
-import de.uni.ki.p3.Drawing.Drawable;
-import de.uni.ki.p3.Drawing.Line;
-import de.uni.ki.p3.Drawing.MapObject;
-import de.uni.ki.p3.Main;
-import javafx.geometry.Point2D;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
-import javafx.scene.transform.Rotate;
+import de.uni.ki.p3.KIUtil;
 
-public class Particle implements Drawable {
-	float x, y, heading, weight;
-	private GraphicsContext gc;
-	private MapObject map;
+public class Particle
+{
+	private Position pos;
+	private double theta;
+	private double weight;
+	
+	public Particle(Position pos, double theta)
+	{
+		this.pos = pos;
+		this.theta = theta;
+	}
+	
+	public Position getPos()
+	{
+		return pos;
+	}
+	
+	public double getTheta()
+	{
+		return theta;
+	}
+	
+	public void move(double dist)
+	{
+		pos = new Position(
+			pos.getX() + Math.cos(Math.toRadians(theta)) * dist,
+			pos.getY() + Math.sin(Math.toRadians(theta)) * dist);
+	}
+	
+	public void rotate(double angle)
+	{
+		theta = (theta + angle) % 360;
+	}
+	
+	public double getWeight()
+	{
+		return weight;
+	}
+	
+	public void setWeight(double weight)
+	{
+		this.weight = weight;
+	}
 
-	public static final float WIDTH = 2;
-    public static final float HEIGHT = 2;
+	@Override
+	public int hashCode()
+	{
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((pos == null) ? 0 : pos.hashCode());
+		long temp;
+		temp = Double.doubleToLongBits(theta);
+		result = prime * result + (int)(temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(weight);
+		result = prime * result + (int)(temp ^ (temp >>> 32));
+		return result;
+	}
 
-    public Particle(final float x,
-                    final float y,
-                    final float heading,
-                    final float weight,
-                    final GraphicsContext gc,
-                    final MapObject map) {
-        this.x = x;
-        this.y = y;
-        this.heading = heading;
-        this.weight = weight;
-        this.gc = gc;
-        this.map = map;
-    }
-
-    public float measure() {
-        boolean infinity = true;
-
-        float distance = -1 ;
-
-        for(Line l : map.getLines())
-        {
-            if(x*Main.DrawFactor > l.getX1() && x*Main.DrawFactor < l.getX2() && l.getY1()+l.getY2() > 0)
-            {
-                distance = (float)(l.getY2() - y);
-                System.out.println("Distance: " + distance);
-                infinity = false;
-                break;
-            }
-        }
-
-        if(infinity)
-            System.out.println("Distance: infinity");
-
-        return infinity ? -1 : distance;
-    }
-
-    @Override
-    public void draw() {
-        gc.setFill(Color.BLUE);
-    	gc.setStroke(Color.YELLOW);
-    	
-        gc.fillOval(
-            x, y, WIDTH * Main.DrawFactor, HEIGHT * Main.DrawFactor
-        );
-        float startX = (x + WIDTH * Main.DrawFactor/ 2);
-        float startY = (y + HEIGHT * Main.DrawFactor / 2);
-        float endX = (x - WIDTH * Main.DrawFactor / 2) ;
-        float endY = (y + HEIGHT * Main.DrawFactor / 2) ;
-
-        Rotate r = new Rotate(heading, startX, startY);
-        Point2D p = r.transform(endX, endY);
-
-        gc.strokeLine(startX, startY, p.getX(), p.getY());
-    }
+	@Override
+	public boolean equals(Object obj)
+	{
+		if(!(obj instanceof Particle))
+		{
+			return false;
+		}
+		
+		Particle p = (Particle)obj;
+		
+		if(!pos.equals(p.pos))
+		{
+			return false;
+		}
+		
+		if(!KIUtil.equals(theta, p.theta))
+		{
+			return false;
+		}
+		
+		return true;
+	}
 }
