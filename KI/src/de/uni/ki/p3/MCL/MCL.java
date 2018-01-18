@@ -1,125 +1,158 @@
 package de.uni.ki.p3.MCL;
 
-import de.uni.ki.p3.Drawing.MapObject;
-import javafx.geometry.Point2D;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.transform.Rotate;
+import lejos.robotics.Color;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-public class MCL {
+import de.uni.ki.p3.robot.*;
 
-	private int particleAmount;
-	private GraphicsContext gc;
-	private int bestProbability;
-	private List<Particle> particles = new ArrayList<Particle>();
-	private float noiseFactor = 0.4f;
-	private MapObject map;
-	private float[] weightTable;
-
-	public MCL(final GraphicsContext gc, final MapObject map) {
-		this.gc = gc;
+public class MCL implements RobotListener
+{
+	private int numParticles;
+	private List<Particle> particles;
+	private RangeMap map;
+	private List<MCLListener> listener;
+	
+	public MCL(int numParticles, RangeMap map, Robot robot)
+	{
+		particles = new ArrayList<>();
+		this.numParticles = numParticles;
 		this.map = map;
-	}
-
-	public void initializeParticles(double x, double y, double width, double height) {
-		this.weightTable = new float[this.particleAmount];
-		float initialWeight = 0f;
-
-		for (int i = 0; i < particleAmount; i++) {
-			float heading = (int) (Math.random() * 360);
-
-			int xRandom = (int) (Math.random() * width);
-			// System.out.println("xRandom: " + xRandom);
-			int yRandom = (int) (y + (Math.random() * height));
-			// System.out.println("yRandom: " + yRandom);
-
-			Particle particle = new Particle(xRandom, yRandom, heading, initialWeight, gc, map);
-			particles.add(particle);
-			
-			setWeightTable();
-		}
+		listener = new ArrayList<>();
+		
+		robot.addRobotListener(this);
 	}
 	
-	private void setWeightTable()
+	public void initializeParticles()
 	{
-		float weight = 1;
-		for(int i = 0; i < particleAmount; i++)
+		initializeParticles(0, 0, map.getWidth(), map.getHeight());
+	}
+	
+	public void initializeParticles(double x, double y, double width,
+					double height)
+	{
+		for(int i = 0; i < numParticles; ++i)
 		{
-			weightTable[i] = weight / (i+1);
+			Particle p = new Particle(
+				new Position(
+    				x + Math.random() * width,
+    				y + Math.random() * height),
+				Math.random() * 360);
+			particles.add(p);
 		}
+		
+		fireEvent();
 	}
-
-	public void mcl(float robotDistance, float heading, float speed) {
-		particles.forEach(particle -> {
-			if (particle.measure() <= robotDistance) {
-				int index = (int) (robotDistance - particle.measure());
-				if(index >= particleAmount) index = particleAmount - 1;
-				particle.weight = weightTable[index];
-				System.out.println("Particle-Weight: " + particle.weight);
-			} else {
-				int index = (int)(robotDistance - particle.measure())*-1;
-				if(index >= particleAmount) index = particleAmount - 1;
-				particle.weight = weightTable[index];
-				System.out.println("Particle-Weight: " + particle.weight);
-			}
-
-			particle.heading += (Math.random() * 360);
-			particle.heading %= 360;
-
-			// particle movement
-			float endX = (particle.x + speed);
-			float endY = (particle.y + speed);
-			Rotate r = new Rotate(particle.heading - 225, particle.x, particle.y);
-			Point2D p = r.transform(endX, endY);
-			particle.x = (float) p.getX();
-			particle.y = (float) p.getY();
-		});
-
+	
+	@Override
+	public void robotMoved(Robot robot, double dist)
+	{
+		for(Particle p : particles)
+		{
+			p.move(dist);
+		}
+		
+		fireEvent();
+	}
+	
+	@Override
+	public void robotRotated(Robot robot, double angle)
+	{
+		for(Particle p : particles)
+		{
+			p.rotate(angle);
+		}
+		
+		fireEvent();
+	}
+	
+	@Override
+	public void robotMeasured(Robot robot, RobotMeasurement measurement)
+	{
+		for(Particle p : particles)
+		{
+			p.setWeight(calcWeight(p, measurement));
+		}
+		
 		resample();
-
-		for (Particle p : particles)
-			p.draw();
+		
+		fireEvent();
 	}
 
-	private void resample() {
+	private double calcWeight(Particle p, RobotMeasurement measurement)
+	{
+		// max weight is 1
+		double weight = 1d;
+		
+		// 0.25 depends on color
+		if(measurement.getColorId() == Color.BLACK 
+				^ map.strokeAt(p.getPos()) != null)
+		{
+			weight -= 0.25;
+		}
+		
+		// 0.75 depends on distance scan
+		double dist = map.distanceToWall(p.getPos(), p.getTheta() + measurement.getDistAngle());
+		double d = dist > measurement.getDist() ? dist - measurement.getDist() : measurement.getDist() - dist;
+		if(d < measurement.getDist())
+		{
+			weight -= ((d / measurement.getDist()) * 0.75);
+		}
+		
+		return weight;
+	}
+
+	private void resample()
+	{
 		int N = particles.size();
 		List<Particle> new_particles = new ArrayList<Particle>();
 
 		double incr = 0;
 		int index = 0;
 
-		for (int i = 0; i < N; i++) {
-			incr += particles.get(i).weight;
+		for(int i = 0; i < N; i++)
+		{
+			incr += particles.get(i).getWeight();
 		}
 
 		incr = incr / 2.0 / N;
 		double beta = incr;
 
-		for (int i = 0; i < N; i++) {
-			while (beta > particles.get(index).weight) {
-				beta -= particles.get(index).weight;
+		for(int i = 0; i < N; i++)
+		{
+			while(beta > particles.get(index).getWeight())
+			{
+				beta -= particles.get(index).getWeight();
 				index = (index + 1) % N;
 			}
 
 			beta += incr;
-			try {
-				new_particles.add((Particle) particles.get(index).clone());
-			} catch (CloneNotSupportedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
+			new_particles.add(particles.get(index));
 		}
-		particles = new_particles;
+		particles.clear();
+		particles.addAll(new_particles);
 	}
 
-	public List<Particle> getParticles() {
-		return particles;
+	public List<Particle> getParticles()
+	{
+		return Collections.unmodifiableList(particles);
 	}
-
-	public void setParticleAmount(final int particleAmount) {
-		this.particleAmount = particleAmount;
+	
+	public void addMclListener(MCLListener l)
+	{
+		listener.add(l);
+	}
+	
+	public void removeMclListener(MCLListener l)
+	{
+		listener.remove(l);
+	}
+	
+	public void fireEvent()
+	{
+		for(MCLListener l : listener)
+		{
+			l.particlesChanged(this);
+		}
 	}
 }

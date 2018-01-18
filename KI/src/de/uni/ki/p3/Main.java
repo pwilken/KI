@@ -1,117 +1,205 @@
 package de.uni.ki.p3;
 
-import de.uni.ki.p3.Drawing.MapObject;
-import de.uni.ki.p3.Drawing.Rect;
-import de.uni.ki.p3.MCL.MCL;
-import de.uni.ki.p3.MCL.Particle;
-import de.uni.ki.p3.SVG.SVGParsing;
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Group;
-import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import java.util.*;
+
+import de.uni.ki.p3.Drawing.*;
+import de.uni.ki.p3.MCL.*;
+import de.uni.ki.p3.SVG.SvgDocument;
+import de.uni.ki.p3.robot.*;
+import de.uni.ki.p3.robot.Robot;
+import javafx.application.*;
+import javafx.beans.property.*;
+import javafx.beans.value.*;
+import javafx.concurrent.Task;
+import javafx.fxml.*;
+import javafx.scene.*;
+import javafx.scene.control.*;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import org.w3c.dom.svg.SVGDocument;
 
-public class Main extends Application{
+public class Main extends Application implements MCLListener
+{
 	public static float DrawFactor = 3;
+
+	public static void main(String[] args)
+	{
+		launch(args);
+	}
 	
-    public static void main(String[] args) {
-        launch(args);
-    }
-    
-    @Override
-    public void start(Stage primaryStage) {
-        SVGDocument svgDoc = GetSVGDocument();
-        MapObject mapObject = new MapObject();
-        mapObject.parseSVGDocument(svgDoc);
-        Canvas background = new Canvas(mapObject.getWidth(), mapObject.getHeight());
-        Canvas foreground = new Canvas(mapObject.getWidth(), mapObject.getHeight());
-        System.out.println("mapObject.height: " + mapObject.getHeight());
-        System.out.println("Canvas-Height: " + background.getHeight());
-        GraphicsContext backgroundGC = background.getGraphicsContext2D();
-        GraphicsContext foregroundGC = foreground.getGraphicsContext2D();
-        mapObject.setGc(backgroundGC);
-        mapObject.draw();
+	@FXML
+	private Button btnStart;
+	@FXML
+	private Pane pane;
+	@FXML
+	private TextField txtNum;
+	
+	private RangeMap map;
+	
+	private ObjectProperty<MCL> mcl;
+	private Robot robot;
+	
+	private Group grpMcl;
+	
+	private MoveTask task;
 
-        MCL mcl = new MCL(foregroundGC, mapObject);
-        Robot robot = new Robot(0, (float) mapObject.getHeight() / 4 + 7, 180, mapObject, foregroundGC, mcl);
-        robot.draw();
-        robot.rotateSensor(-90);
+	@Override
+	public void start(Stage primaryStage) throws Exception
+	{
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("Gui.fxml"));
+		loader.setController(this);
+		primaryStage.setScene(new Scene((Parent)loader.load()));
+		primaryStage.setTitle("KIsches Wunder");
+		primaryStage.show();
+	}
+	
+	@FXML
+	private void initialize()
+	{
+		SvgDocument doc = new SvgDocument("img/street.svg");
+		map = new SvgRangeMap(doc);
+		robot = new SimRobot();
+		grpMcl = new Group();
+//		pane.setPrefWidth(doc.getWidth());
+//		pane.setPrefHeight(doc.getHeight());
+		pane.setScaleX(3);
+		pane.setScaleY(3);
+		pane.translateXProperty().bind(pane.widthProperty());
+		pane.translateYProperty().bind(pane.heightProperty());
+		pane.getChildren().addAll(new SVGNode(doc), grpMcl, new RobotNode(robot));
+		
+		mcl = new SimpleObjectProperty<MCL>(this, "mcl", null);
+		
+		btnStart.disableProperty().bind(mcl.isNull());
+		
+		mcl.addListener(new ChangeListener<MCL>()
+    		{
+    			@Override
+    			public void changed(ObservableValue<? extends MCL> observable,
+    							MCL oldValue, MCL newValue)
+    			{
+    				mclChanged();
+    			}
+    		});
+	}
+	
+	private void mclChanged()
+	{
+		if(mcl.get() == null)
+		{
+			grpMcl.getChildren().clear();
+			return;
+		}
+		
+		List<Node> nodes = new ArrayList<>(mcl.get().getParticles().size());
+		for(Particle p : mcl.get().getParticles())
+		{
+			nodes.add(new ParticleNode(p));
+		}
+		
+		grpMcl.getChildren().setAll(nodes);
+	}
+	
+	@FXML
+	private void doStart()
+	{
+		if(task != null)
+		{
+			task.cancel();
+		}
+		
+		task = new MoveTask(robot);
+		task.exceptionProperty().addListener(new ChangeListener<Throwable>()
+    		{
+    			@Override
+    			public void changed(ObservableValue<? extends Throwable> observable,
+    							Throwable oldValue, Throwable newValue)
+    			{
+    				if(newValue != null)
+    				{
+    					newValue.printStackTrace();
+    				}
+    			}
+    		});
+		Thread t = new Thread(task);
+		t.setDaemon(true);
+		t.start();
+	}
+	
+	@FXML
+	private void doGen()
+	{
+		int cnt;
+		try
+		{
+			cnt = Integer.parseInt(txtNum.getText());
+		}
+		catch(NumberFormatException e)
+		{
+			return;
+		}
+		if(cnt < 1)
+		{
+			return;
+		}
+		
+		if(mcl.get() != null)
+		{
+			mcl.get().removeMclListener(this);
+		}
+		
+		mcl.set(new MCL(cnt, map, robot));
+		mcl.get().addMclListener(this);
+		// TODO $DeH
+		if(robot instanceof SimRobot)
+		{
+			SimRobot sim = (SimRobot)robot;
+			sim.setDistAngle(90);
+			sim.setMap(map);
+			sim.setPos(new Position(10, 80));
+			sim.setTheta(0);
+		}
+		mcl.get().initializeParticles(0d, 70d, 400d, 20d);
+	}
+	
+	@Override
+	public void particlesChanged(MCL mcl)
+	{
+		mclChanged();
+	}
+	
+	public static class MoveTask extends Task<Void>
+	{
+		private Robot robot;
+		
+		public MoveTask(Robot robot)
+		{
+			this.robot = robot;
+		}
 
-        VBox vBox = new VBox();
-        vBox.setPadding(new Insets(10));
-        vBox.setSpacing(10);
-
-        HBox hBox = new HBox();
-        hBox.setSpacing(10);
-        hBox.setAlignment(Pos.CENTER_LEFT);
-
-        final Label lbl = new Label("Anzahl Partikel:");
-        TextField txtField = new TextField();
-        Button generateParticleBtn = new Button("Generieren");
-        Button startBtn = new Button("Start");
-        generateParticleBtn.setOnAction(event -> {
-            try {
-                Rect rect = mapObject.getRects().get(0);
-                System.out.println("rect.getY: " + rect.getY());
-
-                int particleAmount = Integer.parseInt(txtField.getText());
-                mcl.setParticleAmount(particleAmount);
-                mcl.initializeParticles(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
-                mcl.getParticles().forEach(Particle::draw);
-                startBtn.setDisable(false);
-            } catch (final NumberFormatException e) {
-                txtField.setText("Muss eine Ganzzahl sein!");
-            }
-        });
-        startBtn.setDisable(true);
-        startBtn.setOnAction(event -> {
-        	RobotTest((float)mapObject.getWidth(), mapObject, robot);
-        });
-        hBox.getChildren().add(lbl);
-        hBox.getChildren().add(txtField);
-        hBox.getChildren().add(generateParticleBtn);
-        hBox.getChildren().add(startBtn);
-        vBox.getChildren().add(hBox);
-
-        Group canvasGroup = new Group();
-        canvasGroup.getChildren().add(background);
-        canvasGroup.getChildren().add(foreground);
-        vBox.getChildren().add(canvasGroup);
-
-        primaryStage.setTitle("KIsches Wunder");
-        primaryStage.setScene(new Scene(vBox));
-        primaryStage.show();
-    }
-    
-    private SVGDocument GetSVGDocument()
-    {
-    	String filePath = "img/street.svg";
-    	return SVGParsing.toSVGDocument(filePath);
-    }
-    
-
-    private void RobotTest(float mapWidth, MapObject map, Robot robot)
-    {
-    	new Thread(() -> {
-    	    for(int i = 0; i < mapWidth; i++)
-    	    {
-                Platform.runLater(() -> robot.move(0, 2));
-    	    	try {
-					Thread.sleep(200);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
+		@Override
+		protected Void call() throws Exception
+		{
+			while(!isCancelled() && robot.getPos().getX() < 390)
+			{
+				Platform.runLater(new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						robot.move(10);
+					}
+				});
+				
+				try
+				{
+					Thread.sleep(1000);
 				}
-    	    }
-    	}).start();
-    }
+				catch(InterruptedException e)
+				{
+					return null;
+				}
+			}
+			return null;
+		}
+	}
 }
