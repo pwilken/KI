@@ -6,14 +6,28 @@ package de.uni.ki.p1;
 import lejos.hardware.Button;
 import lejos.hardware.device.NXTCam;
 import lejos.hardware.ev3.LocalEV3;
-import lejos.hardware.lcd.*;
-import lejos.hardware.motor.*;
-import lejos.hardware.port.*;
-import lejos.hardware.sensor.*;
-import lejos.robotics.*;
-import lejos.robotics.chassis.*;
+import lejos.hardware.lcd.Font;
+import lejos.hardware.lcd.GraphicsLCD;
+import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import lejos.hardware.motor.EV3MediumRegulatedMotor;
+import lejos.hardware.port.MotorPort;
+import lejos.hardware.port.SensorPort;
+import lejos.hardware.sensor.EV3ColorSensor;
+import lejos.hardware.sensor.EV3UltrasonicSensor;
+import lejos.robotics.Color;
+import lejos.robotics.RegulatedMotor;
+import lejos.robotics.SampleProvider;
+import lejos.robotics.chassis.Chassis;
+import lejos.robotics.chassis.Wheel;
+import lejos.robotics.chassis.WheeledChassis;
 import lejos.robotics.filter.PublishFilter;
 import lejos.robotics.navigation.MovePilot;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 public class Ev3Main
 {
@@ -30,7 +44,42 @@ public class Ev3Main
 		NXTCam cam = new NXTCam(SensorPort.S1);
 		EV3ColorSensor col = new EV3ColorSensor(SensorPort.S2);
 		EV3UltrasonicSensor us = new EV3UltrasonicSensor(SensorPort.S4);
-		
+
+        int port = 8000;
+        try (
+                ServerSocket serverSocket = new ServerSocket(port);
+                Socket clientSocket = serverSocket.accept();
+                PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+                BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))
+        ) {
+            for (;;) {
+                String command = in.readLine();
+
+                if (command.equalsIgnoreCase(Command.END)) {
+                    break;
+                }
+
+                double value = getValue(command);
+                switch (command) {
+                    case Command.MOVE:
+                        pilot.travel(value);
+                        break;
+                    case Command.ROTATE:
+                        pilot.rotate(value);
+                        break;
+                    case Command.ROTATE_US:
+                        // the motor of the ultrasonic sensor is mounted the other way around
+                        // therefore the angle to rotate has to be multiplied with -1 to ensure the expected behaviour
+                        usMotor.rotate((int) value * -1);
+                        break;
+                }
+
+                float[] sample = new float[us.sampleSize()];
+                us.getDistanceMode().fetchSample(sample, 0);
+                out.println(Command.createCommand(Command.MEASUREMENT, sample[0]));
+            }
+        }
+
 		SampleProvider sp = new PublishFilter(new SampleProvider()
     		{
     			
@@ -149,4 +198,9 @@ public class Ev3Main
 		if(Button.ESCAPE.isDown()) System.exit(0);
 		g.clear();
 	}
+
+    private static double getValue(String command)
+    {
+        return Double.parseDouble(command.split(Command.SEPARATOR)[1]);
+    }
 }
