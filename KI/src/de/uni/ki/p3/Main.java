@@ -65,7 +65,7 @@ public class Main extends Application implements MCLListener
 		pane.setScaleY(3);
 		pane.translateXProperty().bind(pane.widthProperty());
 		pane.translateYProperty().bind(pane.heightProperty());
-		pane.getChildren().addAll(new SVGNode(doc), grpMcl, new RobotNode(robot));
+		pane.getChildren().addAll(new SVGNode(doc), new RobotNode(robot), grpMcl);
 		
 		mcl = new SimpleObjectProperty<MCL>(this, "mcl", null);
 		
@@ -153,7 +153,7 @@ public class Main extends Application implements MCLListener
 		if(robot instanceof SimRobot)
 		{
 			SimRobot sim = (SimRobot)robot;
-			sim.setDistAngle(90);
+			sim.setDistAngle(-90);
 			sim.setMap(map);
 			sim.setPos(new Position(10, 80));
 			sim.setTheta(0);
@@ -187,6 +187,7 @@ public class Main extends Application implements MCLListener
 					public void run()
 					{
 						robot.move(10);
+						robot.measure();
 					}
 				});
 				

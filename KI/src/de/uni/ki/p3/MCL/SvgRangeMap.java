@@ -5,6 +5,7 @@ package de.uni.ki.p3.MCL;
 
 import java.util.*;
 
+import de.uni.ki.p3.KIUtil;
 import de.uni.ki.p3.SVG.*;
 
 public class SvgRangeMap implements RangeMap
@@ -49,7 +50,7 @@ public class SvgRangeMap implements RangeMap
 	@Override
 	public double distanceToWall(Position pos, double angle)
 	{
-		double minDist = 0d;
+		double minDist = Double.POSITIVE_INFINITY;
 		
 		for(Line line : lines)
 		{
@@ -63,42 +64,65 @@ public class SvgRangeMap implements RangeMap
 
 	private double calcDist(Position pos, double angle, Line line)
 	{
-		// https://stackoverflow.com/questions/563198/whats-the-most-efficent-way-to-calculate-where-two-line-segments-intersect
-		Line l2 = new Line(pos, angle);
-		
-		Position p = l2.pos;
-		Position r = l2.delta;
-		Position q = line.pos;
-		Position s = line.delta;
-		
-		if(Math.abs(r.cross(s)) < 0.001)
+		return calcDistSimple(pos, angle, line);
+//		// https://stackoverflow.com/questions/563198/whats-the-most-efficent-way-to-calculate-where-two-line-segments-intersect
+//		Line l2 = new Line(pos, angle);
+//		
+//		Position p = l2.pos;
+//		Position r = l2.delta;
+//		Position q = line.pos;
+//		Position s = line.delta;
+//		
+//		if(Math.abs(r.cross(s)) < 0.001)
+//		{
+//			if(Math.abs(q.subtract(p).cross(r)) < 0.001)
+//            {
+//            	return Double.POSITIVE_INFINITY;
+//            }
+//			else
+//			{
+//				return Double.POSITIVE_INFINITY;
+//			}
+//		}
+//		else
+//		{
+//			double u = q.subtract(p).cross(r) / r.cross(s);
+//			double t = q.subtract(p).cross(s) / r.cross(s);
+//			
+//			if(u <= 1.001 && t <= 1.001)
+//			{
+//				double meetX = l2.pos.getX() + t * l2.delta.getX();
+//				double meetY = l2.pos.getY() + t * l2.delta.getY();
+//				return Math.sqrt(
+//					meetX * meetX + meetY * meetY);
+//			}
+//			else
+//			{
+//				return Double.POSITIVE_INFINITY;
+//			}
+//		}
+	}
+	
+	private double calcDistSimple(Position pos, double angle, Line line)
+	{
+		if(angle == -90)
 		{
-			if(Math.abs(q.subtract(p).cross(r)) < 0.001)
-            {
-            	return Double.POSITIVE_INFINITY;
-            }
-			else
+			if(line.pos.getY() > pos.getY())
 			{
 				return Double.POSITIVE_INFINITY;
 			}
-		}
-		else
-		{
-			double u = q.subtract(p).cross(r) / r.cross(s);
-			double t = q.subtract(p).cross(s) / r.cross(s);
+			double min = Math.min(line.pos.getX(), line.pos.getX() + line.delta.getX());
+			double max = min + Math.abs(line.delta.getX());
 			
-			if(u <= 1.001 && t <= 1.001)
-			{
-				double meetX = l2.pos.getX() + t * l2.delta.getX();
-				double meetY = l2.pos.getY() + t * l2.delta.getY();
-				return Math.sqrt(
-					meetX * meetX + meetY * meetY);
-			}
-			else
+			if(pos.getX() < min || pos.getX() > max)
 			{
 				return Double.POSITIVE_INFINITY;
 			}
+			
+			return KIUtil.positiveDistance(pos.getY(), line.pos.getY());
 		}
+		
+		throw new RuntimeException();
 	}
 
 	@Override
