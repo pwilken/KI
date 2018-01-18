@@ -142,4 +142,9 @@ public class SimRobot implements Robot
 	{
 		this.map = map;
 	}
+
+	@Override
+	public List<RobotListener> getRobotListener() {
+		return listener;
+	}
 }
