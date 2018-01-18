@@ -95,9 +95,13 @@ public class MCL implements RobotListener
 		
 		// 750 depends on distance scan
 		double dist = map.distanceToWall(p.getPos(), p.getTheta() + measurement.getDistAngle());
-		System.out.println(p.getPos() + " - " + dist);
 		double d = KIUtil.positiveDistance(dist, measurement.getDist());
-		if(d < measurement.getDist())
+		d *= 4;
+		if(Double.isInfinite(dist) || Double.isInfinite(d))
+		{
+			weight -= 750;
+		}
+		else if(d < measurement.getDist())
 		{
 			weight -= ((d / measurement.getDist()) * 750);
 		}
@@ -120,6 +124,8 @@ public class MCL implements RobotListener
 
 		incr = incr / 2.0 / N;
 		double beta = incr;
+		
+		Set<Particle> set = new HashSet<>();
 
 		for(int i = 0; i < N; i++)
 		{
@@ -128,9 +134,22 @@ public class MCL implements RobotListener
 				beta -= particles.get(index).getWeight();
 				index = (index + 1) % N;
 			}
-
+			
 			beta += incr;
-			new_particles.add(particles.get(index).clone());
+			Particle p = particles.get(index);
+			if(!set.contains(p))
+			{
+				new_particles.add(p.clone());
+				set.add(p);
+			}
+			else
+			{
+				new_particles.add(new Particle(
+					new Position(
+						p.getPos().getX() + (Math.random() * 20 - 10),
+						p.getPos().getY() + (Math.random() * 20 - 10)),
+					p.getTheta()));
+			}
 		}
 		particles.clear();
 		particles.addAll(new_particles);
