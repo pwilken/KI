@@ -35,17 +35,18 @@ public class Ev3RobotDecorator implements Robot {
     @Override
     public void move(final double dist) {
         robot.move(dist);
-        out.println(Command.create(Command.MOVE, dist));
+        out.println(Command.withValue(Command.MOVE, dist));
     }
 
     @Override
     public void rotate(final double angle) {
         robot.move(angle);
-        out.println(Command.create(Command.MOVE, angle));
+        out.println(Command.withValue(Command.MOVE, angle));
     }
 
     @Override
     public void measure() {
+        out.println(Command.MEASURE);
         String realMeasures = "";
         try {
             realMeasures = in.readLine();

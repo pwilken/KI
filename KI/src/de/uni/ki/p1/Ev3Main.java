@@ -79,13 +79,14 @@ public class Ev3Main
                         // therefore the angle to rotate has to be multiplied with -1 to ensure the expected behaviour
                         usMotor.rotate((int) normalizeUsMotorAngle(value));
                         break;
+                    case Command.MEASURE:
+                        col.fetchSample(samples, 0);
+                        us.getDistanceMode().fetchSample(samples, col.sampleSize());
+                        // convert meters to centimeters
+                        samples[1] = samples[0] * 100;
+                        out.println(String.format("%s %s %s", samples[0], samples[1], normalizeUsMotorAngle(usMotorAngle)));
+                        break;
                 }
-
-                col.fetchSample(samples, 0);
-                us.getDistanceMode().fetchSample(samples, col.sampleSize());
-                // convert meters to centimeters
-                samples[1] = samples[0] * 100;
-                out.println(String.format("%s %s %s", samples[0], samples[1], normalizeUsMotorAngle(usMotorAngle)));
             }
         }
 
