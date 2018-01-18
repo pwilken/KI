@@ -4,6 +4,7 @@ import lejos.robotics.Color;
 
 import java.util.*;
 
+import de.uni.ki.p3.KIUtil;
 import de.uni.ki.p3.robot.*;
 
 public class MCL implements RobotListener
@@ -37,7 +38,8 @@ public class MCL implements RobotListener
 				new Position(
     				x + Math.random() * width,
     				y + Math.random() * height),
-				Math.random() * 360);
+//				Math.random() * 360);
+				0);
 			particles.add(p);
 		}
 		
@@ -82,21 +84,22 @@ public class MCL implements RobotListener
 	private double calcWeight(Particle p, RobotMeasurement measurement)
 	{
 		// max weight is 1
-		double weight = 1d;
+		double weight = 1000d;
 		
-		// 0.25 depends on color
+		// 250 depends on color
 		if(measurement.getColorId() == Color.BLACK 
 				^ map.strokeAt(p.getPos()) != null)
 		{
-			weight -= 0.25;
+			weight -= 250;
 		}
 		
-		// 0.75 depends on distance scan
+		// 750 depends on distance scan
 		double dist = map.distanceToWall(p.getPos(), p.getTheta() + measurement.getDistAngle());
-		double d = dist > measurement.getDist() ? dist - measurement.getDist() : measurement.getDist() - dist;
+		System.out.println(p.getPos() + " - " + dist);
+		double d = KIUtil.positiveDistance(dist, measurement.getDist());
 		if(d < measurement.getDist())
 		{
-			weight -= ((d / measurement.getDist()) * 0.75);
+			weight -= ((d / measurement.getDist()) * 750);
 		}
 		
 		return weight;
@@ -127,7 +130,7 @@ public class MCL implements RobotListener
 			}
 
 			beta += incr;
-			new_particles.add(particles.get(index));
+			new_particles.add(particles.get(index).clone());
 		}
 		particles.clear();
 		particles.addAll(new_particles);
