@@ -41,7 +41,8 @@ public class RobotNode extends Group implements RobotListener
 		lSensor.endYProperty().bind(lSensor.startYProperty());
 //		lSensor.setRotationAxis(Rotate.Z_AXIS);
 //		lSensor.setRotate(robot.getDistAngle() + robot.getTheta());
-		rlSensor = new Rotate(robot.getTheta() + robot.getDistAngle(), 0, 0, 0, Rotate.Z_AXIS);
+		rlSensor = new Rotate(robot.getTheta(),l.startXProperty().floatValue(),l.startYProperty().floatValue());
+
 		lSensor.getTransforms().add(rlSensor);
 		
 		getChildren().addAll(c, l, lSensor);

@@ -19,10 +19,11 @@ public class ParticleNode extends Group
 		l.setStrokeWidth(0.25);
 		l.startXProperty().bind(c.centerXProperty());
 		l.startYProperty().bind(c.centerYProperty());
-		l.endXProperty().bind(l.startXProperty().add(c.radiusProperty()));
+		l.endXProperty().bind(l.startXProperty().add(c.radiusProperty().add(1)));
 		l.endYProperty().bind(l.startYProperty());
 		l.setRotationAxis(Rotate.Z_AXIS);
-		l.setRotate(p.getTheta());
+		l.getTransforms().add(new Rotate(p.getTheta(),l.startXProperty().floatValue(),l.startYProperty().floatValue()));
+		//l.setRotate(p.getTheta());
 		
 		getChildren().addAll(c, l);
 	}
