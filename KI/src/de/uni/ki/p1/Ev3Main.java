@@ -6,31 +6,89 @@ package de.uni.ki.p1;
 import lejos.hardware.Button;
 import lejos.hardware.device.NXTCam;
 import lejos.hardware.ev3.LocalEV3;
-import lejos.hardware.lcd.*;
-import lejos.hardware.motor.*;
-import lejos.hardware.port.*;
-import lejos.hardware.sensor.*;
-import lejos.robotics.*;
-import lejos.robotics.chassis.*;
+import lejos.hardware.lcd.Font;
+import lejos.hardware.lcd.GraphicsLCD;
+import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import lejos.hardware.motor.EV3MediumRegulatedMotor;
+import lejos.hardware.port.MotorPort;
+import lejos.hardware.port.SensorPort;
+import lejos.hardware.sensor.EV3ColorSensor;
+import lejos.hardware.sensor.EV3UltrasonicSensor;
+import lejos.robotics.Color;
+import lejos.robotics.RegulatedMotor;
+import lejos.robotics.SampleProvider;
+import lejos.robotics.chassis.Chassis;
+import lejos.robotics.chassis.Wheel;
+import lejos.robotics.chassis.WheeledChassis;
 import lejos.robotics.filter.PublishFilter;
 import lejos.robotics.navigation.MovePilot;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 public class Ev3Main
 {
 	public static void main(String[] args) throws Exception
 	{
-		Wheel wheel1 = WheeledChassis.modelWheel(new EV3LargeRegulatedMotor(MotorPort.B), 6.5).offset(-6.8);
-		Wheel wheel2 = WheeledChassis.modelWheel(new EV3LargeRegulatedMotor(MotorPort.C), 6.5).offset(6.8);
+		final Wheel wheel1 = WheeledChassis.modelWheel(
+            new EV3LargeRegulatedMotor(MotorPort.B), 6.5
+        ).offset(-6.8);
+		final Wheel wheel2 = WheeledChassis.modelWheel(
+            new EV3LargeRegulatedMotor(MotorPort.C), 6.5
+        ).offset(6.8);
 		RegulatedMotor usMotor = new EV3MediumRegulatedMotor(MotorPort.D);
-		usMotor.rotate(90);
+        final int usMotorAngle = 90;
+        usMotor.rotate(usMotorAngle);
 		
 		Chassis chassis = new WheeledChassis(new Wheel[]{wheel1, wheel2}, 2); 
 		MovePilot pilot = new MovePilot(chassis);
 
-		NXTCam cam = new NXTCam(SensorPort.S1);
-		EV3ColorSensor col = new EV3ColorSensor(SensorPort.S2);
-		EV3UltrasonicSensor us = new EV3UltrasonicSensor(SensorPort.S4);
-		
+		final NXTCam cam = new NXTCam(SensorPort.S1);
+		final EV3ColorSensor col = new EV3ColorSensor(SensorPort.S2);
+		final EV3UltrasonicSensor us = new EV3UltrasonicSensor(SensorPort.S4);
+
+        int port = 8000;
+        try (
+            ServerSocket serverSocket = new ServerSocket(port);
+            Socket clientSocket = serverSocket.accept();
+            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))
+        ) {
+            float[] samples = new float[us.sampleSize() + col.sampleSize()];
+
+            for (;;) {
+                String command = in.readLine();
+
+                if (command.equalsIgnoreCase(Command.END)) {
+                    break;
+                }
+
+                double value = getValue(command);
+                switch (command) {
+                    case Command.MOVE:
+                        pilot.travel(value);
+                        break;
+                    case Command.ROTATE:
+                        pilot.rotate(value);
+                        break;
+                    case Command.ROTATE_US:
+                        // the motor of the ultrasonic sensor is mounted the other way around
+                        // therefore the angle to rotate has to be multiplied with -1 to ensure the expected behaviour
+                        usMotor.rotate((int) normalizeUsMotorAngle(value));
+                        break;
+                }
+
+                col.fetchSample(samples, 0);
+                us.getDistanceMode().fetchSample(samples, col.sampleSize());
+                // convert meters to centimeters
+                samples[1] = samples[0] * 100;
+                out.println(String.format("%s %s %s", samples[0], samples[1], normalizeUsMotorAngle(usMotorAngle)));
+            }
+        }
+
 		SampleProvider sp = new PublishFilter(new SampleProvider()
     		{
     			
@@ -149,4 +207,13 @@ public class Ev3Main
 		if(Button.ESCAPE.isDown()) System.exit(0);
 		g.clear();
 	}
+
+    private static double getValue(String command)
+    {
+        return Double.parseDouble(command.split(Command.SEPARATOR)[1]);
+    }
+
+    private static double normalizeUsMotorAngle(double angle) {
+	    return angle * -1;
+    }
 }
