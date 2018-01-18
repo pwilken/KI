@@ -126,6 +126,22 @@ public class Main extends Application implements MCLListener
 	}
 	
 	@FXML
+	private void doStop()
+	{
+		Platform.runLater(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				if(task != null)
+				{
+					task.cancel();
+				}
+			}
+		});
+	}
+	
+	@FXML
 	private void doGen()
 	{
 		int cnt;

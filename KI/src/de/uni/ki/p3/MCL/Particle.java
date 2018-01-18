@@ -2,7 +2,7 @@ package de.uni.ki.p3.MCL;
 
 import de.uni.ki.p3.KIUtil;
 
-public class Particle implements Cloneable
+public class Particle implements Cloneable, Comparable<Particle>
 {
 	private Position pos;
 	private double theta;
@@ -12,6 +12,7 @@ public class Particle implements Cloneable
 	{
 		this.pos = pos;
 		this.theta = theta;
+		weight = 1000d;
 	}
 	
 	public Position getPos()
@@ -87,5 +88,11 @@ public class Particle implements Cloneable
 	protected Particle clone()
 	{
 		return new Particle(new Position(pos.getX(), pos.getY()), theta);
+	}
+
+	@Override
+	public int compareTo(Particle o)
+	{
+		return Double.compare(weight, o.weight);
 	}
 }

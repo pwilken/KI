@@ -91,6 +91,7 @@ public class MCL implements RobotListener
 				^ map.strokeAt(p.getPos()) != null)
 		{
 			weight -= 250;
+			return 0;
 		}
 		
 		// 750 depends on distance scan
@@ -99,11 +100,15 @@ public class MCL implements RobotListener
 		d *= 4;
 		if(Double.isInfinite(dist) || Double.isInfinite(d))
 		{
-			weight -= 750;
+			weight = 0;
 		}
 		else if(d < measurement.getDist())
 		{
-			weight -= ((d / measurement.getDist()) * 750);
+			weight -= ((d / measurement.getDist()) * 1000);
+		}
+		else
+		{
+			weight = 0;
 		}
 		
 		return weight;
@@ -111,6 +116,7 @@ public class MCL implements RobotListener
 
 	private void resample()
 	{
+		Collections.sort(particles);
 		int N = particles.size();
 		List<Particle> new_particles = new ArrayList<Particle>();
 
@@ -125,8 +131,6 @@ public class MCL implements RobotListener
 		incr = incr / 2.0 / N;
 		double beta = incr;
 		
-		Set<Particle> set = new HashSet<>();
-
 		for(int i = 0; i < N; i++)
 		{
 			while(beta > particles.get(index).getWeight())
@@ -136,23 +140,30 @@ public class MCL implements RobotListener
 			}
 			
 			beta += incr;
-			Particle p = particles.get(index);
-			if(!set.contains(p))
-			{
-				new_particles.add(p.clone());
-				set.add(p);
-			}
-			else
-			{
-				new_particles.add(new Particle(
-					new Position(
-						p.getPos().getX() + (Math.random() * 20 - 10),
-						p.getPos().getY() + (Math.random() * 20 - 10)),
-					p.getTheta()));
-			}
+			Particle p = creVariantOf(particles.get(index));
+			
+			new_particles.add(p);
 		}
 		particles.clear();
 		particles.addAll(new_particles);
+	}
+
+	private Particle creVariantOf(Particle p)
+	{
+		while(true)
+		{
+    		Particle pp = new Particle(
+                			new Position(
+                				p.getPos().getX() + (Math.random() * 20 - 10),
+                				p.getPos().getY() + (Math.random() * 20 - 10)),
+                			p.getTheta());
+    		
+    		if(pp.getPos().getX() < map.getWidth() && pp.getPos().getX() > 0
+				&& pp.getPos().getY() < map.getHeight() && pp.getPos().getY() > 0)
+    		{
+    			return pp;
+    		}
+		}
 	}
 
 	public List<Particle> getParticles()
