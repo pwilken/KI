@@ -2,7 +2,7 @@ package de.uni.ki.p3.MCL;
 
 import de.uni.ki.p3.KIUtil;
 
-public class Particle
+public class Particle implements Cloneable
 {
 	private Position pos;
 	private double theta;
@@ -81,5 +81,11 @@ public class Particle
 		}
 		
 		return true;
+	}
+	
+	@Override
+	protected Particle clone()
+	{
+		return new Particle(new Position(pos.getX(), pos.getY()), theta);
 	}
 }
