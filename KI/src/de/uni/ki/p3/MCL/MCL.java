@@ -128,7 +128,6 @@ public class MCL implements RobotListener
 
 			beta += incr;
 			new_particles.add(particles.get(index));
-
 		}
 		particles.clear();
 		particles.addAll(new_particles);
