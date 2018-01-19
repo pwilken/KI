@@ -57,11 +57,14 @@ public class Ev3Main
             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))
         ) {
+        	System.out.println("connected to<" + clientSocket.getInetAddress().getHostName() + ">");
             float[] samples = new float[us.sampleSize() + col.sampleSize()];
 
             for (;;) {
                 String command = in.readLine();
 
+                System.out.println("received command<" + command + ">");
+                
                 if (command.equalsIgnoreCase(Command.END)) {
                     break;
                 }
@@ -83,7 +86,7 @@ public class Ev3Main
                         col.fetchSample(samples, 0);
                         us.getDistanceMode().fetchSample(samples, col.sampleSize());
                         // convert meters to centimeters
-                        samples[1] = samples[0] * 100;
+                        samples[col.sampleSize()] = samples[col.sampleSize()] * 100;
                         out.println(String.format("%s %s %s", samples[0], samples[1], normalizeUsMotorAngle(usMotorAngle)));
                         break;
                 }
