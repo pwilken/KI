@@ -18,8 +18,6 @@ import javafx.stage.Stage;
 
 public class Main extends Application implements MCLListener
 {
-	public static float DrawFactor = 3;
-
 	public static void main(String[] args)
 	{
 		launch(args);
@@ -58,7 +56,7 @@ public class Main extends Application implements MCLListener
 		SvgDocument doc = new SvgDocument("img/street.svg");
 		map = new SvgRangeMap(doc);
 		simRobot = new SimRobot();
-		robot = robot;
+		robot = new Ev3RobotDecorator(simRobot, "192.168.43.222", 8000);
 		grpMcl = new Group();
 //		pane.setPrefWidth(doc.getWidth());
 //		pane.setPrefHeight(doc.getHeight());
