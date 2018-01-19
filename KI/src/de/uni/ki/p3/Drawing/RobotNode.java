@@ -13,6 +13,7 @@ import javafx.scene.transform.Rotate;
 public class RobotNode extends Group implements RobotListener
 {
 	private Circle c;
+	private Circle cSim;
 	private Line l;
 	private Line lSensor;
 	
@@ -53,6 +54,14 @@ public class RobotNode extends Group implements RobotListener
 	public RobotNode(SimRobot robot)
 	{
 		this((Robot)robot);
+		
+		cSim = new Circle(robot.getPos().getX(), robot.getPos().getY(), 5,
+			new Color(
+				Color.RED.getRed(),
+				Color.RED.getGreen(),
+				Color.RED.getBlue(),
+				0.5));
+		getChildren().add(cSim);
 	}
 	
 	@Override
@@ -70,6 +79,13 @@ public class RobotNode extends Group implements RobotListener
     			{
     				c.setCenterX(robot.getPos().getX());
     				c.setCenterY(robot.getPos().getY());
+    				
+    				if(cSim != null)
+    				{
+    					SimRobot r = (SimRobot)robot;
+    					cSim.setCenterX(r.getSimPos().getX());
+    					cSim.setCenterY(r.getSimPos().getY());
+    				}
     				
     				rlSensor.setAngle(robot.getDistAngle() + robot.getTheta());
     			}

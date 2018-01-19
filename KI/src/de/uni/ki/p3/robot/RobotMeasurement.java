@@ -69,4 +69,10 @@ public class RobotMeasurement
 		
 		return true;
 	}
+	
+	@Override
+	public String toString()
+	{
+		return "Measurment(" + colorId + ", " + dist + ", " + distAngle + ")";
+	}
 }

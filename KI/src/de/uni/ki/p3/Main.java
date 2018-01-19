@@ -6,7 +6,6 @@ import de.uni.ki.p3.Drawing.*;
 import de.uni.ki.p3.MCL.*;
 import de.uni.ki.p3.SVG.SvgDocument;
 import de.uni.ki.p3.robot.*;
-import de.uni.ki.p3.robot.Robot;
 import javafx.application.*;
 import javafx.beans.property.*;
 import javafx.beans.value.*;
@@ -36,6 +35,7 @@ public class Main extends Application implements MCLListener
 	private RangeMap map;
 	
 	private ObjectProperty<MCL> mcl;
+	private SimRobot simRobot;
 	private Robot robot;
 	
 	private Group grpMcl;
@@ -57,7 +57,8 @@ public class Main extends Application implements MCLListener
 	{
 		SvgDocument doc = new SvgDocument("img/street.svg");
 		map = new SvgRangeMap(doc);
-		robot = new SimRobot();
+		simRobot = new SimRobot();
+		robot = robot;
 		grpMcl = new Group();
 //		pane.setPrefWidth(doc.getWidth());
 //		pane.setPrefHeight(doc.getHeight());
@@ -65,7 +66,14 @@ public class Main extends Application implements MCLListener
 		pane.setScaleY(3);
 		pane.translateXProperty().bind(pane.widthProperty());
 		pane.translateYProperty().bind(pane.heightProperty());
-		pane.getChildren().addAll(new SVGNode(doc), new RobotNode(robot), grpMcl);
+		if(simRobot != null)
+		{
+			pane.getChildren().addAll(new SVGNode(doc), new RobotNode(simRobot), grpMcl);
+		}
+		else
+		{
+			pane.getChildren().addAll(new SVGNode(doc), new RobotNode(robot), grpMcl);
+		}
 		
 		mcl = new SimpleObjectProperty<MCL>(this, "mcl", null);
 		
@@ -107,7 +115,7 @@ public class Main extends Application implements MCLListener
 			task.cancel();
 		}
 		
-		task = new MoveTask(robot);
+		task = new MoveTask();
 		task.exceptionProperty().addListener(new ChangeListener<Throwable>()
     		{
     			@Override
@@ -166,13 +174,22 @@ public class Main extends Application implements MCLListener
 		mcl.set(new MCL(cnt, map, robot));
 		mcl.get().addMclListener(this);
 		// TODO $DeH
+		if(simRobot != null)
+		{
+			simRobot.setMap(map);
+			simRobot.setDistAngle(-90);
+			simRobot.setPos(new Position(10, 80));
+			simRobot.setSimPos(new Position(10, 80));
+			simRobot.setTheta(0);
+		}
 		if(robot instanceof SimRobot)
 		{
-			SimRobot sim = (SimRobot)robot;
-			sim.setDistAngle(-90);
-			sim.setMap(map);
-			sim.setPos(new Position(10, 80));
-			sim.setTheta(0);
+			SimRobot simRobot = (SimRobot)robot;
+			simRobot.setMap(map);
+			simRobot.setDistAngle(-90);
+			simRobot.setPos(new Position(10, 80));
+			simRobot.setSimPos(new Position(10, 80));
+			simRobot.setTheta(0);
 		}
 		mcl.get().initializeParticles(0d, 70d, 400d, 20d);
 	}
@@ -183,37 +200,62 @@ public class Main extends Application implements MCLListener
 		mclChanged();
 	}
 	
-	public static class MoveTask extends Task<Void>
+	public class MoveTask extends Task<Void>
 	{
-		private Robot robot;
-		
-		public MoveTask(Robot robot)
+		public MoveTask()
 		{
-			this.robot = robot;
 		}
 
 		@Override
 		protected Void call() throws Exception
 		{
-			while(!isCancelled() && robot.getPos().getX() < 390)
+			if(simRobot != null)
 			{
-				Platform.runLater(new Runnable()
+    			while(!isCancelled() && simRobot.getSimPos().getX() < 390)
+    			{
+    				Platform.runLater(new Runnable()
+    				{
+    					@Override
+    					public void run()
+    					{
+    						robot.move(10);
+    						robot.measure();
+    						simRobot.setPos(mcl.get().getBest().getPos());
+    					}
+    				});
+    				
+    				try
+    				{
+    					Thread.sleep(1000);
+    				}
+    				catch(InterruptedException e)
+    				{
+    					return null;
+    				}
+    			}
+			}
+			else
+			{
+				while(!isCancelled() && robot.getPos().getX() < 390)
 				{
-					@Override
-					public void run()
+					Platform.runLater(new Runnable()
 					{
-						robot.move(10);
-						robot.measure();
+						@Override
+						public void run()
+						{
+							robot.move(10);
+							robot.measure();
+						}
+					});
+					
+					try
+					{
+						Thread.sleep(1000);
 					}
-				});
-				
-				try
-				{
-					Thread.sleep(1000);
-				}
-				catch(InterruptedException e)
-				{
-					return null;
+					catch(InterruptedException e)
+					{
+						return null;
+					}
 				}
 			}
 			return null;

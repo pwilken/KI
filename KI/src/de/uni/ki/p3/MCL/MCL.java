@@ -83,11 +83,11 @@ public class MCL implements RobotListener
 
 	private double calcWeight(Particle p, RobotMeasurement measurement)
 	{
-		// max weight is 1
+		// max weight is 1000
 		double weight = 1000d;
 		
 		// 250 depends on color
-		if(measurement.getColorId() == Color.BLACK 
+		if(measurement.getColorId() != Color.NONE 
 				^ map.strokeAt(p.getPos()) != null)
 		{
 			weight -= 250;
@@ -108,7 +108,7 @@ public class MCL implements RobotListener
 		}
 		else
 		{
-			weight = 0;
+			weight -= 1000;
 		}
 		
 		return weight;
@@ -150,13 +150,14 @@ public class MCL implements RobotListener
 
 	private Particle creVariantOf(Particle p)
 	{
-		while(true)
+		for(int i = 0; i < 10; ++i)
 		{
     		Particle pp = new Particle(
                 			new Position(
                 				p.getPos().getX() + (Math.random() * 20 - 10),
                 				p.getPos().getY() + (Math.random() * 20 - 10)),
-                			p.getTheta());
+//                			p.getTheta() + (Math.random() * 20 - 10));
+                    		p.getTheta());
     		
     		if(pp.getPos().getX() < map.getWidth() && pp.getPos().getX() > 0
 				&& pp.getPos().getY() < map.getHeight() && pp.getPos().getY() > 0)
@@ -164,6 +165,14 @@ public class MCL implements RobotListener
     			return pp;
     		}
 		}
+		
+		Particle pp = new Particle(
+			new Position(
+				p.getPos().getX(),
+				p.getPos().getY()),
+//                			p.getTheta() + (Math.random() * 20 - 10));
+				p.getTheta());
+		return pp;
 	}
 
 	public List<Particle> getParticles()
@@ -187,5 +196,10 @@ public class MCL implements RobotListener
 		{
 			l.particlesChanged(this);
 		}
+	}
+	
+	public Particle getBest()
+	{
+		return Collections.max(particles);
 	}
 }

@@ -13,6 +13,7 @@ public class SimRobot implements Robot
 {
 	private List<RobotListener> listener;
 	private Position pos;
+	private Position simPos;
 	private double theta;
 	private double distAngle;
 	private RangeMap map;
@@ -21,6 +22,7 @@ public class SimRobot implements Robot
 	{
 		listener = new ArrayList<>();
 		pos = new Position(0, 0);
+		simPos = new Position(0, 0);
 	}
 
 	@Override
@@ -29,6 +31,9 @@ public class SimRobot implements Robot
 		pos = new Position(
 			pos.getX() + Math.cos(Math.toRadians(theta)) * dist,
 			pos.getY() + Math.sin(Math.toRadians(theta)) * dist);
+		simPos = new Position(
+			simPos.getX() + Math.cos(Math.toRadians(theta)) * dist,
+			simPos.getY() + Math.sin(Math.toRadians(theta)) * dist);
 		
 		for(RobotListener l : listener)
 		{
@@ -54,9 +59,11 @@ public class SimRobot implements Robot
 	@Override
 	public void measure()
 	{
+		System.out.println(simPos);
+		
 		RobotMeasurement measurement = new RobotMeasurement(
-			map.strokeAt(pos) == null ? Color.NONE : Color.BLACK,
-			map.distanceToWall(pos, theta + distAngle),
+			map.strokeAt(simPos) == null ? Color.NONE : Color.BLACK,
+			map.distanceToWall(simPos, theta + distAngle),
 			distAngle);
 		
 		for(RobotListener l : listener)
@@ -100,8 +107,19 @@ public class SimRobot implements Robot
 		
 		for(RobotListener l : listener)
 		{
-			l.robotMoved(this, dist);
+			// TODO $DeH
+//			l.robotMoved(this, dist);
 		}
+	}
+	
+	public Position getSimPos()
+	{
+		return simPos;
+	}
+	
+	public void setSimPos(Position simPos)
+	{
+		this.simPos = simPos;
 	}
 	
 	@Override
