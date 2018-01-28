@@ -1,45 +1,37 @@
 package de.uni.ki.p3.MCL;
 
-import lejos.robotics.Color;
-
 import java.util.*;
 
-import de.uni.ki.p3.KIUtil;
 import de.uni.ki.p3.robot.*;
 
 public class MCL implements RobotListener
 {
-	private int numParticles;
 	private List<Particle> particles;
+	private MCLConfiguration config;
+	private MCLWeightFunction weighter;
+	private MCLResampler resampler;
 	private RangeMap map;
 	private List<MCLListener> listener;
 	
-	public MCL(int numParticles, RangeMap map, Robot robot)
+	public MCL(RangeMap map, MCLConfiguration config)
 	{
 		particles = new ArrayList<>();
-		this.numParticles = numParticles;
+		this.config = config;
+		weighter = new MCLDefaultWeightFunction();
+		resampler = new MCLDefaultResampler();
 		this.map = map;
 		listener = new ArrayList<>();
-		
-		robot.addRobotListener(this);
 	}
 	
 	public void initializeParticles()
 	{
-		initializeParticles(0, 0, map.getWidth(), map.getHeight());
-	}
-	
-	public void initializeParticles(double x, double y, double width,
-					double height)
-	{
-		for(int i = 0; i < numParticles; ++i)
+		for(int i = 0; i < config.initialParticleCount; ++i)
 		{
 			Particle p = new Particle(
 				new Position(
-    				x + Math.random() * width,
-    				y + Math.random() * height),
-//				Math.random() * 360);
-				0);
+    				config.initialParticlePosX + Math.random() * config.initialParticlePosWidth,
+    				config.initialParticlePosY + Math.random() * config.initialParticlePosHeight),
+				config.minAngle + Math.random() * (config.maxAngle - config.minAngle));
 			particles.add(p);
 		}
 		
@@ -69,110 +61,21 @@ public class MCL implements RobotListener
 	}
 	
 	@Override
+	public void robotTerminated(Robot ev3RobotDecorator)
+	{
+	}
+	
+	@Override
 	public void robotMeasured(Robot robot, RobotMeasurement measurement)
 	{
 		for(Particle p : particles)
 		{
-			p.setWeight(calcWeight(p, measurement));
+			p.setWeight(weighter.calcWeight(this, measurement, p));
 		}
 		
-		resample();
+		particles = resampler.resample(this, particles);
 		
 		fireEvent();
-	}
-
-	private double calcWeight(Particle p, RobotMeasurement measurement)
-	{
-		// max weight is 1000
-		double weight = 1000d;
-		
-		// 250 depends on color
-		if(measurement.getColorId() != Color.NONE 
-				^ map.strokeAt(p.getPos()) != null)
-		{
-			weight -= 250;
-			return 0;
-		}
-		
-		// 750 depends on distance scan
-		double dist = map.distanceToWall(p.getPos(), p.getTheta() + measurement.getDistAngle());
-		double d = KIUtil.positiveDistance(dist, measurement.getDist());
-		d *= 4;
-		if(Double.isInfinite(dist) || Double.isInfinite(d))
-		{
-			weight = 0;
-		}
-		else if(d < measurement.getDist())
-		{
-			weight -= ((d / measurement.getDist()) * 1000);
-		}
-		else
-		{
-			weight -= 1000;
-		}
-		
-		return weight;
-	}
-
-	private void resample()
-	{
-		Collections.sort(particles);
-		int N = particles.size();
-		List<Particle> new_particles = new ArrayList<Particle>();
-
-		double incr = 0;
-		int index = 0;
-
-		for(int i = 0; i < N; i++)
-		{
-			incr += particles.get(i).getWeight();
-		}
-
-		incr = incr / 2.0 / N;
-		double beta = incr;
-		
-		for(int i = 0; i < N; i++)
-		{
-			while(beta > particles.get(index).getWeight())
-			{
-				beta -= particles.get(index).getWeight();
-				index = (index + 1) % N;
-			}
-			
-			beta += incr;
-			Particle p = creVariantOf(particles.get(index));
-			
-			new_particles.add(p);
-		}
-		particles.clear();
-		particles.addAll(new_particles);
-	}
-
-	private Particle creVariantOf(Particle p)
-	{
-		for(int i = 0; i < 10; ++i)
-		{
-    		Particle pp = new Particle(
-                			new Position(
-                				p.getPos().getX() + (Math.random() * 20 - 10),
-                				p.getPos().getY() + (Math.random() * 20 - 10)),
-//                			p.getTheta() + (Math.random() * 20 - 10));
-                    		p.getTheta());
-    		
-    		if(pp.getPos().getX() < map.getWidth() && pp.getPos().getX() > 0
-				&& pp.getPos().getY() < map.getHeight() && pp.getPos().getY() > 0)
-    		{
-    			return pp;
-    		}
-		}
-		
-		Particle pp = new Particle(
-			new Position(
-				p.getPos().getX(),
-				p.getPos().getY()),
-//                			p.getTheta() + (Math.random() * 20 - 10));
-				p.getTheta());
-		return pp;
 	}
 
 	public List<Particle> getParticles()
@@ -196,6 +99,36 @@ public class MCL implements RobotListener
 		{
 			l.particlesChanged(this);
 		}
+	}
+	
+	public MCLWeightFunction getWeighter()
+	{
+		return weighter;
+	}
+	
+	public void setWeighter(MCLWeightFunction weighter)
+	{
+		this.weighter = weighter;
+	}
+	
+	public MCLResampler getResampler()
+	{
+		return resampler;
+	}
+	
+	public void setResampler(MCLResampler resampler)
+	{
+		this.resampler = resampler;
+	}
+	
+	public MCLConfiguration getConfig()
+	{
+		return config;
+	}
+	
+	public RangeMap getMap()
+	{
+		return map;
 	}
 	
 	public Particle getBest()
