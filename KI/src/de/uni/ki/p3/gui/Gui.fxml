@@ -34,7 +34,7 @@
             <Button fx:id="btnStart" mnemonicParsing="false" onAction="#doStart" text="Start" />
             <Button fx:id="btnStop" mnemonicParsing="false" onAction="#doStop" text="Stop" />
             <Button fx:id="btnNextStep" mnemonicParsing="false" onAction="#doNextStep" text="Next Step" />
-            <TitledPane fx:id="parentConfig" animated="false" text="Konfiguration">
+            <TitledPane fx:id="parentConfig" expanded="false" text="MCL-Konfiguration">
                <content>
                   <VBox>
                      <children>
@@ -60,6 +60,24 @@
                               <TextField fx:id="txtTolAngle" prefWidth="50.0" text="0" />
                            </children>
                         </HBox>
+                     </children>
+                  </VBox>
+               </content>
+            </TitledPane>
+            <TitledPane expanded="false" text="Simu-Konfiguration">
+               <content>
+                  <VBox prefHeight="200.0" prefWidth="100.0">
+                     <children>
+                        <Label text="Move-Toleranz" />
+                        <TextField fx:id="txtSimuMoveTol" text="0" />
+                        <Label text="Rotate-Toleranz" />
+                        <TextField fx:id="txtSimuRotTol" text="0" />
+                        <Label text="Measure-Dist-Toleranz" />
+                        <TextField fx:id="txtSimuDistTol" text="0" />
+                        <Label text="Measure-Angle-Toleranz" />
+                        <TextField fx:id="txtSimuAngleTol" text="0" />
+                        <Label text="Winkel" />
+                        <TextField fx:id="txtSimuAngles" />
                      </children>
                   </VBox>
                </content>

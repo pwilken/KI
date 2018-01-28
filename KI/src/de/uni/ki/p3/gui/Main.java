@@ -67,6 +67,16 @@ public class Main extends Application
 	private TextField txtTolY;
 	@FXML
 	private TextField txtTolAngle;
+	@FXML
+	private TextField txtSimuMoveTol;
+	@FXML
+	private TextField txtSimuRotTol;
+	@FXML
+	private TextField txtSimuDistTol;
+	@FXML
+	private TextField txtSimuAngleTol;
+	@FXML
+	private TextField txtSimuAngles;
 	private GraphicNode graphicNode;
 	
 	private ObjectProperty<SvgDocument> svgDocument;
@@ -101,7 +111,7 @@ public class Main extends Application
 		
 		svgDocument = new SimpleObjectProperty<>(this, "svgDocument", null);
 		rangeMap = new SimpleObjectProperty<>(this, "svgMap", null);
-		robot = new SimpleObjectProperty<Robot>(this, "robot", new SimRobot());
+		robot = new SimpleObjectProperty<Robot>(this, "robot", null);
 		pilot = new SimpleObjectProperty<>(this, "pilot", null);
 		
 		graphicNode = new GraphicNode(pane, svgDocument, robot, pilot);
@@ -124,6 +134,7 @@ public class Main extends Application
     				{
     					robot.set(new SimRobot());
     					((SimRobot)robot.get()).setMap(rangeMap.get());
+    					setTxtValuesSimu((SimRobot)robot.get());
     				}
     				else
     				{
@@ -260,91 +271,148 @@ public class Main extends Application
     			}
     		});
 		
-		txtMinAngle.textProperty().addListener(new ChangeListener<String>()
+		ChangeListener<String> configCl = new ChangeListener<String>()
+    		{
+    			@Override
+    			public void changed(ObservableValue<? extends String> observable,
+    							String oldValue, String newValue)
+    			{
+    				setTxtValuesCfg();
+    			}
+    		};
+		txtMinAngle.textProperty().addListener(configCl);
+		txtMaxAngle.textProperty().addListener(configCl);
+		txtTolX.textProperty().addListener(configCl);
+		txtTolY.textProperty().addListener(configCl);
+		txtTolAngle.textProperty().addListener(configCl);
+		
+		ChangeListener<String> simuCl = new ChangeListener<String>()
+    		{
+    			@Override
+    			public void changed(ObservableValue<? extends String> observable,
+    							String oldValue, String newValue)
+    			{
+    				if(robot.get() instanceof SimRobot)
+    				{
+    					setTxtValuesSimu((SimRobot) robot.get());
+    				}
+    			}
+    		};
+		txtSimuMoveTol.textProperty().addListener(simuCl);
+		txtSimuRotTol.textProperty().addListener(simuCl);
+		txtSimuDistTol.textProperty().addListener(simuCl);
+		txtSimuAngleTol.textProperty().addListener(simuCl);
+		txtSimuAngles.textProperty().addListener(simuCl);
+	}
+	
+	private void setTxtValuesCfg()
+	{
+		try
+		{
+			config.minAngle = Integer.parseInt(txtMinAngle.getText());
+		}
+		catch(RuntimeException e)
+		{
+			config.minAngle = 0d;
+		}
+		
+		try
+		{
+			config.maxAngle = Integer.parseInt(txtMaxAngle.getText());
+		}
+		catch(RuntimeException e)
+		{
+			config.maxAngle = 360d;
+		}
+		
+		try
+		{
+			config.xTolerance = Integer.parseInt(txtTolX.getText());
+		}
+		catch(RuntimeException e)
+		{
+			config.xTolerance = 0d;
+		}
+		
+		try
+		{
+			config.yTolerance = Integer.parseInt(txtTolY.getText());
+		}
+		catch(RuntimeException e)
+		{
+			config.yTolerance = 0d;
+		}
+		
+		try
+		{
+			config.angleTolerance = Integer.parseInt(txtTolAngle.getText());
+		}
+		catch(RuntimeException e)
+		{
+			config.angleTolerance = 0d;
+		}
+	}
+	
+	private void setTxtValuesSimu(SimRobot simRobot)
+	{
+		try
+		{
+			simRobot.setMoveTolerance(Double.parseDouble(txtSimuMoveTol.getText()));
+		}
+		catch(RuntimeException e)
+		{
+			simRobot.setMoveTolerance(0d);
+		}
+
+		try
+		{
+			simRobot.setRotateTolerance(Double.parseDouble(txtSimuRotTol.getText()));
+		}
+		catch(RuntimeException e)
+		{
+			simRobot.setRotateTolerance(0d);
+		}
+		
+		try
+		{
+			simRobot.setMeasureDistTolerance(Double.parseDouble(txtSimuDistTol.getText()));
+		}
+		catch(RuntimeException e)
+		{
+			simRobot.setMeasureDistTolerance(0d);
+		}
+		
+		try
+		{
+			simRobot.setMeasureAngleTolerance(Double.parseDouble(txtSimuAngleTol.getText()));
+		}
+		catch(RuntimeException e)
+		{
+			simRobot.setMeasureAngleTolerance(0d);
+		}
+		
+		try
+		{
+			String[] parts = txtSimuAngles.getText().split(",");
+			int[] angles = new int[parts.length];
+			for(int i = 0; i < parts.length; ++i)
 			{
-				@Override
-				public void changed(
-								ObservableValue<? extends String> observable,
-								String oldValue, String newValue)
-				{
-					try
-					{
-						config.minAngle = Integer.parseInt(newValue);
-					}
-					catch(RuntimeException e)
-					{
-						config.minAngle = 0;
-					}
-				}
-			});
-		txtMaxAngle.textProperty().addListener(new ChangeListener<String>()
-    		{
-    			@Override
-    			public void changed(
-    							ObservableValue<? extends String> observable,
-    							String oldValue, String newValue)
-    			{
-    				try
-    				{
-    					config.maxAngle = Integer.parseInt(newValue);
-    				}
-    				catch(RuntimeException e)
-    				{
-    					config.maxAngle = 0;
-    				}
-    			}
-    		});
-		txtTolX.textProperty().addListener(new ChangeListener<String>()
+				angles[i] = Integer.parseInt(parts[i].trim());
+			}
+			
+			if(angles.length == 0)
 			{
-				@Override
-				public void changed(
-								ObservableValue<? extends String> observable,
-								String oldValue, String newValue)
-				{
-					try
-					{
-						config.xTolerance = Integer.parseInt(newValue);
-					}
-					catch(RuntimeException e)
-					{
-						config.xTolerance = 0;
-					}
-				}
-			});
-		txtTolY.textProperty().addListener(new ChangeListener<String>()
-    		{
-    			@Override
-    			public void changed(
-    							ObservableValue<? extends String> observable,
-    							String oldValue, String newValue)
-    			{
-    				try
-    				{
-    					config.yTolerance = Integer.parseInt(newValue);
-    				}
-    				catch(RuntimeException e)
-    				{
-    					config.yTolerance = 0;
-    				}
-    			}
-    		});
-		txtTolAngle.textProperty().addListener(new ChangeListener<String>()
-    		{
-    			@Override
-    			public void changed(
-    							ObservableValue<? extends String> observable,
-    							String oldValue, String newValue)
-    			{
-    				try
-    				{
-    					config.angleTolerance = Integer.parseInt(newValue);
-    				}
-    				catch(RuntimeException e)
-    				{
-    					config.angleTolerance = 0;
-    				}
-    			}
-    		});
+				simRobot.setMeasureAngles(0);
+			}
+			else
+			{
+				simRobot.setMeasureAngles(angles);
+			}
+		}
+		catch(RuntimeException e)
+		{
+			simRobot.setMeasureAngles(0);
+		}
 	}
 	
 	@FXML
