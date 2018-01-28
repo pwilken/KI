@@ -48,13 +48,12 @@ public class MCLDefaultResampler implements MCLResampler
 		{
     		Particle pp = new Particle(
                 			new Position(
-                				p.getPos().getX() + (mcl.getConfig().random.nextDouble() * 20 - 10),
-                				p.getPos().getY() + (mcl.getConfig().random.nextDouble() * 20 - 10)),
+                				p.getPos().getX() + (mcl.getConfig().random.nextDouble() * mcl.getConfig().xTolerance - (mcl.getConfig().xTolerance / 2)),
+                				p.getPos().getY() + (mcl.getConfig().random.nextDouble() * mcl.getConfig().yTolerance - (mcl.getConfig().yTolerance / 2))),
 //                			p.getTheta() + (Math.random() * 20 - 10));
-                    		p.getTheta());
+                    		p.getTheta() + (mcl.getConfig().random.nextDouble() * mcl.getConfig().angleTolerance - (mcl.getConfig().angleTolerance / 2)));
     		
-    		if(pp.getPos().getX() < map.getWidth() && pp.getPos().getX() > 0
-				&& pp.getPos().getY() < map.getHeight() && pp.getPos().getY() > 0)
+    		if(mcl.getMap().isInside(pp.getPos()))
     		{
     			return pp;
     		}

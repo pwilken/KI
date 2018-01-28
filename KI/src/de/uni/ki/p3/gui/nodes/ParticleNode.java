@@ -1,7 +1,7 @@
 /*
  * Copyright © 2018 Unitechnik Systems GmbH. All Rights Reserved.
  */
-package de.uni.ki.p3.Drawing;
+package de.uni.ki.p3.gui.nodes;
 
 import de.uni.ki.p3.MCL.Particle;
 import javafx.scene.Group;

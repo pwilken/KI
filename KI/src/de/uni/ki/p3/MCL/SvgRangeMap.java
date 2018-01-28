@@ -5,7 +5,6 @@ package de.uni.ki.p3.MCL;
 
 import java.util.*;
 
-import de.uni.ki.p3.KIUtil;
 import de.uni.ki.p3.SVG.*;
 
 public class SvgRangeMap implements RangeMap
@@ -13,6 +12,8 @@ public class SvgRangeMap implements RangeMap
 	private SvgDocument svg;
 	private List<Line> lines;
 	private List<SvgRect> rects;
+	
+	private boolean closed;
 	
 	public SvgRangeMap(SvgDocument svg)
 	{
@@ -22,6 +23,8 @@ public class SvgRangeMap implements RangeMap
 		this.svg = svg;
 		
 		parse(svg.getRoot());
+		
+		evaluate(svg);
 	}
 	
 	private void parse(SvgElement e)
@@ -46,6 +49,12 @@ public class SvgRangeMap implements RangeMap
 			throw new RuntimeException();
 		}
 	}
+	
+	private void evaluate(SvgDocument svg)
+	{
+		// TODO $DeH
+		closed = true;
+	}
 
 	@Override
 	public double distanceToWall(Position pos, double angle)
@@ -64,67 +73,44 @@ public class SvgRangeMap implements RangeMap
 
 	private double calcDist(Position pos, double angle, Line line)
 	{
-		return calcDistSimple(pos, angle, line);
-//		// https://stackoverflow.com/questions/563198/whats-the-most-efficent-way-to-calculate-where-two-line-segments-intersect
-//		Line l2 = new Line(pos, angle);
-//		
-//		Position p = l2.pos;
-//		Position r = l2.delta;
-//		Position q = line.pos;
-//		Position s = line.delta;
-//		
-//		if(Math.abs(r.cross(s)) < 0.001)
-//		{
-//			if(Math.abs(q.subtract(p).cross(r)) < 0.001)
-//            {
-//            	return Double.POSITIVE_INFINITY;
-//            }
-//			else
-//			{
-//				return Double.POSITIVE_INFINITY;
-//			}
-//		}
-//		else
-//		{
-//			double u = q.subtract(p).cross(r) / r.cross(s);
-//			double t = q.subtract(p).cross(s) / r.cross(s);
-//			
-//			if(u <= 1.001 && t <= 1.001)
-//			{
-//				double meetX = l2.pos.getX() + t * l2.delta.getX();
-//				double meetY = l2.pos.getY() + t * l2.delta.getY();
-//				return Math.sqrt(
-//					meetX * meetX + meetY * meetY);
-//			}
-//			else
-//			{
-//				return Double.POSITIVE_INFINITY;
-//			}
-//		}
+		// https://stackoverflow.com/questions/563198/whats-the-most-efficent-way-to-calculate-where-two-line-segments-intersect
+		Line l2 = new Line(pos, angle);
+		
+		Position p = l2.pos;
+		Position r = l2.delta;
+		Position q = line.pos;
+		Position s = line.delta;
+		
+		if(Math.abs(r.cross(s)) < 0.001)
+		{
+			if(Math.abs(q.subtract(p).cross(r)) < 0.001)
+            {
+            	return Double.POSITIVE_INFINITY;
+            }
+			else
+			{
+				return Double.POSITIVE_INFINITY;
+			}
+		}
+		else
+		{
+			double u = q.subtract(p).cross(r) / r.cross(s);
+			double t = q.subtract(p).cross(s) / r.cross(s);
+			
+			if(u <= 1.001 && t <= 1.001)
+			{
+				double meetX = l2.pos.getX() + t * l2.delta.getX();
+				double meetY = l2.pos.getY() + t * l2.delta.getY();
+				return Math.sqrt(
+					meetX * meetX + meetY * meetY);
+			}
+			else
+			{
+				return Double.POSITIVE_INFINITY;
+			}
+		}
 	}
 	
-	private double calcDistSimple(Position pos, double angle, Line line)
-	{
-		if(angle == -90)
-		{
-			if(line.pos.getY() > pos.getY())
-			{
-				return Double.POSITIVE_INFINITY;
-			}
-			double min = Math.min(line.pos.getX(), line.pos.getX() + line.delta.getX());
-			double max = min + Math.abs(line.delta.getX());
-			
-			if(pos.getX() < min || pos.getX() > max)
-			{
-				return Double.POSITIVE_INFINITY;
-			}
-			
-			return KIUtil.positiveDistance(pos.getY(), line.pos.getY());
-		}
-		
-		throw new RuntimeException();
-	}
-
 	@Override
 	public String strokeAt(Position pos)
 	{
@@ -171,5 +157,67 @@ public class SvgRangeMap implements RangeMap
 				pos.getX() * Math.cos(Math.toRadians(angle)),
 				pos.getY() * Math.sin(Math.toRadians(angle)));
 		}
+	}
+	
+	@Override
+	public boolean isClosed()
+	{
+		return closed;
+	}
+	
+	@Override
+	public boolean isInside(Position pos)
+	{
+		if(!isClosed())
+		{
+			return true;
+		}
+		
+		if(pos.getX() < 0d || pos.getX() > getWidth()
+			|| pos.getY() < 0d || pos.getY() > getHeight())
+		{
+			return false;
+		}
+		
+		boolean up = false;
+		boolean down = false;
+		boolean left = false;
+		boolean right = false;
+		
+		for(Line l : lines)
+		{
+			boolean x = l.pos.getX() > pos.getX() ^ l.pos.getX() + l.delta.getX() > pos.getX();
+			boolean y = l.pos.getY() > pos.getY() ^ l.pos.getY() + l.delta.getY() > pos.getY();
+			
+			if(x ^ y)
+			{
+				if(x)
+				{
+					// left or right
+					if(l.pos.getX() > pos.getX())
+					{
+						right = true;
+					}
+					else
+					{
+						left = true;
+					}
+				}
+				else
+				{
+					// up or down
+					if(l.pos.getY() > pos.getY())
+					{
+						down = true;
+					}
+					else
+					{
+						up = true;
+					}
+				}
+			}
+		}
+		
+		return up && down && left && right;
 	}
 }

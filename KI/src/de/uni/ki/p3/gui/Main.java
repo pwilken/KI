@@ -1,0 +1,407 @@
+package de.uni.ki.p3.gui;
+
+import java.io.*;
+import java.util.concurrent.Callable;
+
+import de.uni.ki.p3.MCL.*;
+import de.uni.ki.p3.SVG.SvgDocument;
+import de.uni.ki.p3.gui.nodes.GraphicNode;
+import de.uni.ki.p3.pilot.Pilot;
+import de.uni.ki.p3.robot.*;
+import javafx.application.Application;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.*;
+import javafx.beans.value.*;
+import javafx.event.EventHandler;
+import javafx.fxml.*;
+import javafx.geometry.Point2D;
+import javafx.scene.*;
+import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
+import javafx.stage.*;
+import javafx.stage.FileChooser.ExtensionFilter;
+
+public class Main extends Application
+{
+	public static void main(String[] args)
+	{
+		launch(args);
+	}
+	
+	@FXML
+	private RadioButton radSimu;
+	@FXML
+	private RadioButton radEv3;
+	@FXML
+	private Parent parentEv3;
+	@FXML
+	private TextField txtIp;
+	@FXML
+	private TextField txtPort;
+	@FXML
+	private Button btnStart;
+	@FXML
+	private Button btnStop;
+	@FXML
+	private Button btnNextStep;
+	@FXML
+	private Label lblState;
+	@FXML
+	private Label lblRobot;
+	@FXML
+	private Parent parentConfig;
+	@FXML
+	private TextField txtSeed;
+	@FXML
+	private Pane pane;
+	@FXML
+	private TextField txtNum;
+	@FXML
+	private TextField txtMinAngle;
+	@FXML
+	private TextField txtMaxAngle;
+	@FXML
+	private TextField txtTolX;
+	@FXML
+	private TextField txtTolY;
+	@FXML
+	private TextField txtTolAngle;
+	private GraphicNode graphicNode;
+	
+	private ObjectProperty<SvgDocument> svgDocument;
+	private ObjectProperty<RangeMap> rangeMap;
+	private ObjectProperty<Robot> robot;
+	private ObjectProperty<Pilot> pilot;
+	
+	private MCLConfiguration config;
+	
+	@Override
+	public void start(Stage primaryStage) throws Exception
+	{
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("Gui.fxml"));
+		loader.setController(this);
+		primaryStage.setScene(new Scene((Parent)loader.load()));
+		primaryStage.setTitle("KIsches Wunder");
+		primaryStage.show();
+	}
+	
+	@FXML
+	private void initialize()
+	{
+		initFields();
+		initListener();
+		
+		config.initialParticleCount = Integer.parseInt(txtNum.getText());
+	}
+	
+	private void initFields()
+	{
+		config = new MCLConfiguration();
+		
+		svgDocument = new SimpleObjectProperty<>(this, "svgDocument", null);
+		rangeMap = new SimpleObjectProperty<>(this, "svgMap", null);
+		robot = new SimpleObjectProperty<Robot>(this, "robot", new SimRobot());
+		pilot = new SimpleObjectProperty<>(this, "pilot", null);
+		
+		graphicNode = new GraphicNode(pane, svgDocument, robot, pilot);
+	}
+	
+	private void initListener()
+	{
+		ToggleGroup group = new ToggleGroup();
+		group.getToggles().addAll(radSimu, radEv3);
+		
+		parentEv3.disableProperty().bind(radSimu.selectedProperty());
+		
+		group.selectedToggleProperty().addListener(new ChangeListener<Toggle>()
+    		{
+    			@Override
+    			public void changed(ObservableValue<? extends Toggle> o,
+    							Toggle oldVal, Toggle newVal)
+    			{
+    				if(newVal == radSimu)
+    				{
+    					robot.set(new SimRobot());
+    					((SimRobot)robot.get()).setMap(rangeMap.get());
+    				}
+    				else
+    				{
+    					doConnect();
+    				}
+    			}
+    		});
+		
+		lblRobot.textProperty().bind(Bindings.createStringBinding(
+			new Callable<String>()
+			{
+				@Override
+				public String call() throws Exception
+				{
+					if(robot.get() == null)
+					{
+						return "Kein Roboter";
+					}
+					if(robot.get() instanceof SimRobot)
+					{
+						return "Simu";
+					}
+					if(robot.get() instanceof Ev3Robot)
+					{
+						return "EV3";
+					}
+					
+					throw new IllegalStateException();
+				}
+			},
+			robot));
+		
+		lblState.styleProperty().bind(Bindings.createStringBinding(
+			new Callable<String>()
+			{
+				@Override
+				public String call() throws Exception
+				{
+					if(robot.get() == null)
+					{
+						return "-fx-background-color: red;";
+					}
+					return "-fx-background-color: green;";
+				}
+			},
+			robot));
+		
+		txtSeed.textProperty().addListener(
+			new ChangeListener<String>()
+			{
+				@Override
+				public void changed(
+								ObservableValue<? extends String> observable,
+								String oldValue, String newValue)
+				{
+					try
+					{
+						// TODO $DeH
+						long seed = Integer.parseInt(newValue);
+//						config.random = new Random(seed);
+					}
+					catch(RuntimeException e)
+					{
+//						config.random = new Random();
+						e.printStackTrace();
+					}
+				}
+			});
+		
+		rangeMap.bind(Bindings.createObjectBinding(
+			new Callable<RangeMap>()
+			{
+				@Override
+				public SvgRangeMap call() throws Exception
+				{
+					if(svgDocument.get() == null)
+					{
+						return null;
+					}
+					return new SvgRangeMap(svgDocument.get());
+				}
+			},
+			svgDocument));
+		
+		rangeMap.addListener(new ChangeListener<RangeMap>()
+    		{
+    			@Override
+    			public void changed(
+    							ObservableValue<? extends RangeMap> observable,
+    							RangeMap oldValue, RangeMap newValue)
+    			{
+    				if(newValue == null)
+    				{
+    					config.initialParticlePosX = Double.MIN_VALUE;
+    					config.initialParticlePosY = Double.MIN_VALUE;
+    					config.initialParticlePosWidth = Double.MAX_VALUE;
+    					config.initialParticlePosHeight = Double.MAX_VALUE;
+    					if(robot.get() instanceof SimRobot)
+    					{
+    						((SimRobot)robot.get()).setMap(null);
+    					}
+    				}
+    				else
+    				{
+        				config.initialParticlePosX = 0d;
+        				config.initialParticlePosY = 0d;
+        				config.initialParticlePosWidth = newValue.getWidth();
+        				config.initialParticlePosHeight = newValue.getHeight();
+        				if(robot.get() instanceof SimRobot)
+        				{
+        					((SimRobot)robot.get()).setMap(newValue);
+        				}
+    				}
+    			}
+    		});
+		
+		btnStart.disableProperty().bind(
+			robot.isNull().or(rangeMap.isNull()));
+		btnNextStep.disableProperty().bind(btnStart.disableProperty());
+		btnStop.disableProperty().bind(btnStart.disableProperty());
+		
+		pane.setOnMouseClicked(new EventHandler<MouseEvent>()
+    		{
+    			@Override
+    			public void handle(MouseEvent event)
+    			{
+    				if(robot.get() instanceof SimRobot
+						&& rangeMap.get() != null)
+    				{
+    					Point2D p = new Point2D(event.getX(), event.getY());
+    					p = pane.getChildren().get(0).parentToLocal(p);
+    					((SimRobot)robot.get()).setPos(new Position(p.getX(), p.getY()));
+    				}
+    			}
+    		});
+		
+		txtMinAngle.textProperty().addListener(new ChangeListener<String>()
+			{
+				@Override
+				public void changed(
+								ObservableValue<? extends String> observable,
+								String oldValue, String newValue)
+				{
+					try
+					{
+						config.minAngle = Integer.parseInt(newValue);
+					}
+					catch(RuntimeException e)
+					{
+						config.minAngle = 0;
+					}
+				}
+			});
+		txtMaxAngle.textProperty().addListener(new ChangeListener<String>()
+    		{
+    			@Override
+    			public void changed(
+    							ObservableValue<? extends String> observable,
+    							String oldValue, String newValue)
+    			{
+    				try
+    				{
+    					config.maxAngle = Integer.parseInt(newValue);
+    				}
+    				catch(RuntimeException e)
+    				{
+    					config.maxAngle = 0;
+    				}
+    			}
+    		});
+		txtTolX.textProperty().addListener(new ChangeListener<String>()
+			{
+				@Override
+				public void changed(
+								ObservableValue<? extends String> observable,
+								String oldValue, String newValue)
+				{
+					try
+					{
+						config.xTolerance = Integer.parseInt(newValue);
+					}
+					catch(RuntimeException e)
+					{
+						config.xTolerance = 0;
+					}
+				}
+			});
+		txtTolY.textProperty().addListener(new ChangeListener<String>()
+    		{
+    			@Override
+    			public void changed(
+    							ObservableValue<? extends String> observable,
+    							String oldValue, String newValue)
+    			{
+    				try
+    				{
+    					config.yTolerance = Integer.parseInt(newValue);
+    				}
+    				catch(RuntimeException e)
+    				{
+    					config.yTolerance = 0;
+    				}
+    			}
+    		});
+		txtTolAngle.textProperty().addListener(new ChangeListener<String>()
+    		{
+    			@Override
+    			public void changed(
+    							ObservableValue<? extends String> observable,
+    							String oldValue, String newValue)
+    			{
+    				try
+    				{
+    					config.angleTolerance = Integer.parseInt(newValue);
+    				}
+    				catch(RuntimeException e)
+    				{
+    					config.angleTolerance = 0;
+    				}
+    			}
+    		});
+	}
+	
+	@FXML
+	private void loadMap()
+	{
+		FileChooser fc = new FileChooser();
+		fc.setInitialDirectory(new File("img"));
+		fc.getExtensionFilters().add(new ExtensionFilter("Svg-Maps", "*.svg"));
+		File f = fc.showOpenDialog(null);
+		
+		if(f != null)
+		{
+			svgDocument.set(new SvgDocument(f.getAbsolutePath()));
+		}
+	}
+	
+	@FXML
+	private void doConnect()
+	{
+		try
+		{
+			robot.set(new Ev3Robot(txtIp.getText(), Integer.parseInt(txtPort.getText())));
+		}
+		catch(NumberFormatException | IOException e)
+		{
+			e.printStackTrace();
+			robot.set(null);
+		}
+	}
+	
+	@FXML
+	private void doStart()
+	{
+		if(pilot.get() == null)
+		{
+			pilot.set(new Pilot(robot.get(), rangeMap.get(), config));
+		}
+		
+		pilot.get().start();
+	}
+
+	@FXML
+	private void doStop()
+	{
+		if(pilot.get() != null)
+		{
+			pilot.get().terminate();
+		}
+	}
+	
+	@FXML
+	private void doNextStep()
+	{
+		if(pilot.get() == null)
+		{
+			pilot.set(new Pilot(robot.get(), rangeMap.get(), config));
+		}
+		pilot.get().nextStep();
+	}
+}

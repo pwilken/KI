@@ -17,5 +17,9 @@ public class MCLConfiguration
 	public double minAngle = 0d;
 	public double maxAngle = 360d;
 	
+	public double xTolerance = 0d;
+	public double yTolerance = 0d;
+	public double angleTolerance = 0;
+	
 	public Random random = new Random();
 }

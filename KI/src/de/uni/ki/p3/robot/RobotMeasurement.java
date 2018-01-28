@@ -5,6 +5,8 @@ package de.uni.ki.p3.robot;
 
 import java.util.*;
 
+import de.uni.ki.p3.KIUtil;
+
 public class RobotMeasurement
 {
 	private int colorId;
@@ -29,6 +31,19 @@ public class RobotMeasurement
 	public List<RobotDistance> getDistances()
 	{
 		return distances;
+	}
+	
+	public RobotDistance getDistance(double angle)
+	{
+		for(RobotDistance dist : distances)
+		{
+			if(KIUtil.equals(angle, dist.getDistAngle()))
+			{
+				return dist;
+			}
+		}
+		
+		return null;
 	}
 	
 	@Override

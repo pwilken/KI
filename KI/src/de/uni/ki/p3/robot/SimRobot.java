@@ -11,22 +11,40 @@ import lejos.robotics.Color;
 public class SimRobot implements Robot
 {
 	private List<RobotListener> listener;
+	private List<SimRobotListener> simListener;
 	private Position pos;
 	private double theta;
 	private RangeMap map;
 	
+	private Random random;
+	private double moveTolerance;
+	private double rotateTolerance;
+	private double measureAngleTolerance;
+	private double measureDistTolerance;
+	
+	private int[] measureAngles;
+	
 	public SimRobot()
 	{
 		listener = new ArrayList<>();
+		simListener = new ArrayList<>();
 		pos = new Position(0, 0);
+		
+		measureAngles = new int[] {0};
+		random = new Random();
+		moveTolerance = 0d;
+		rotateTolerance = 0d;
+		measureAngleTolerance = 0d;
+		measureDistTolerance = 0d;
 	}
 
 	@Override
 	public void move(double dist)
 	{
-		pos = new Position(
+		dist = dist + (random.nextDouble() * moveTolerance) - (moveTolerance / 2);
+		setPos(new Position(
 			pos.getX() + Math.cos(Math.toRadians(theta)) * dist,
-			pos.getY() + Math.sin(Math.toRadians(theta)) * dist);
+			pos.getY() + Math.sin(Math.toRadians(theta)) * dist));
 		
 		for(RobotListener l : listener)
 		{
@@ -37,11 +55,14 @@ public class SimRobot implements Robot
 	@Override
 	public void rotate(double angle)
 	{
-		theta += angle % 360;
+		angle = angle + (random.nextDouble() * rotateTolerance) - (rotateTolerance / 2);
+		double theta = this.theta + angle % 360;
 		if(theta < 0)
 		{
 			theta += 360;
 		}
+		
+		setTheta(theta);
 		
 		for(RobotListener l : listener)
 		{
@@ -54,7 +75,7 @@ public class SimRobot implements Robot
 	{
 		RobotMeasurement measurement = new RobotMeasurement(
 			map.strokeAt(pos) == null ? Color.NONE : Color.BLACK,
-			getDistances(pos, theta, -90, -45, 0, 45, 90));
+			getDistances(pos, theta, measureAngles));
 		
 		for(RobotListener l : listener)
 		{
@@ -68,10 +89,12 @@ public class SimRobot implements Robot
 		
 		for(int angle : angles)
 		{
+			
+			double aangle = theta + angle + (random.nextDouble() * measureAngleTolerance) - (measureAngleTolerance / 2);
+			// we expect a tolerance in distance to only be negative i. e. the measurement is not farther than the real distance
+			double dist = map.distanceToWall(pos, aangle) - (random.nextDouble() * measureDistTolerance);
 			distances.add(
-				new RobotDistance(
-					map.distanceToWall(pos, theta + angle),
-					theta + angle));
+				new RobotDistance(dist, aangle));
 		}
 		
 		return distances;
@@ -102,6 +125,11 @@ public class SimRobot implements Robot
 		}
 		
 		this.pos = pos;
+		
+		for(SimRobotListener l : simListener)
+		{
+			l.posChanged(this, pos);
+		}
 	}
 	
 	public double getTheta()
@@ -112,6 +140,11 @@ public class SimRobot implements Robot
 	public void setTheta(double theta)
 	{
 		this.theta = theta;
+		
+		for(SimRobotListener l : simListener)
+		{
+			l.thetaChanged(this, theta);
+		}
 	}
 	
 	public RangeMap getMap()
@@ -123,9 +156,79 @@ public class SimRobot implements Robot
 	{
 		this.map = map;
 	}
+	
+	public int[] getMeasureAngles()
+	{
+		return measureAngles;
+	}
+	
+	public void setMeasureAngles(int... angles)
+	{
+		measureAngles = angles;
+	}
+	
+	public double getMoveTolerance()
+	{
+		return moveTolerance;
+	}
+	
+	public void setMoveTolerance(double moveTolerance)
+	{
+		this.moveTolerance = moveTolerance;
+	}
+	
+	public double getRotateTolerance()
+	{
+		return rotateTolerance;
+	}
+	
+	public void setRotateTolerance(double rotateTolerance)
+	{
+		this.rotateTolerance = rotateTolerance;
+	}
+	
+	public Random getRandom()
+	{
+		return random;
+	}
+	
+	public void setRandom(Random random)
+	{
+		this.random = random;
+	}
+	
+	public double getMeasureAngleTolerance()
+	{
+		return measureAngleTolerance;
+	}
+	
+	public void setMeasureAngleTolerance(double measureAngleTolerance)
+	{
+		this.measureAngleTolerance = measureAngleTolerance;
+	}
+	
+	public double getMeasureDistTolerance()
+	{
+		return measureDistTolerance;
+	}
+	
+	public void setMeasureDistTolerance(double measureDistTolerance)
+	{
+		this.measureDistTolerance = measureDistTolerance;
+	}
 
 	@Override
 	public void terminate()
 	{
+	}
+	
+	public void addSimListener(SimRobotListener l)
+	{
+		simListener.add(l);
+	}
+	
+	public void removeSimListener(SimRobotListener l)
+	{
+		simListener.remove(l);
 	}
 }
