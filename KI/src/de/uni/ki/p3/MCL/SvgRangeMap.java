@@ -12,6 +12,7 @@ public class SvgRangeMap implements RangeMap
 	private SvgDocument svg;
 	private List<Line> lines;
 	private List<SvgRect> rects;
+	private List<SvgCircle> marks;
 	
 	private boolean closed;
 	
@@ -19,6 +20,7 @@ public class SvgRangeMap implements RangeMap
 	{
 		lines = new ArrayList<>();
 		rects = new ArrayList<>();
+		marks = new ArrayList<>();
 		
 		this.svg = svg;
 		
@@ -36,6 +38,10 @@ public class SvgRangeMap implements RangeMap
 		else if(e instanceof SvgRect)
 		{
 			rects.add((SvgRect)e);
+		}
+		else if(e instanceof SvgCircle)
+		{
+			marks.add((SvgCircle)e);
 		}
 		else if(e instanceof SvgGroup)
 		{
@@ -101,8 +107,12 @@ public class SvgRangeMap implements RangeMap
 			{
 				double meetX = l2.pos.getX() + t * l2.delta.getX();
 				double meetY = l2.pos.getY() + t * l2.delta.getY();
+				
+				// u * s
+				double usx = t * s.getX();
+				double usy = t * s.getY();
 				return Math.sqrt(
-					meetX * meetX + meetY * meetY);
+					usx * usx + usy * usy);
 			}
 			else
 			{
