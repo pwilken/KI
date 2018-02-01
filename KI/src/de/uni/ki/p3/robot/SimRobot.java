@@ -89,12 +89,11 @@ public class SimRobot implements Robot
 		
 		for(int angle : angles)
 		{
-			
 			double aangle = theta + angle + (random.nextDouble() * measureAngleTolerance) - (measureAngleTolerance / 2);
 			// we expect a tolerance in distance to only be negative i. e. the measurement is not farther than the real distance
 			double dist = map.distanceToWall(pos, aangle) - (random.nextDouble() * measureDistTolerance);
 			distances.add(
-				new RobotDistance(dist, aangle));
+				new RobotDistance(dist, angle));
 		}
 		
 		return distances;

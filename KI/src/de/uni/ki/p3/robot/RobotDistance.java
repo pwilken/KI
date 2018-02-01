@@ -38,4 +38,10 @@ public class RobotDistance
 		
 		return KIUtil.equals(dist, o.dist) && KIUtil.equals(distAngle, o.distAngle);
 	}
+	
+	@Override
+	public String toString()
+	{
+		return "distance<" + dist + "> on angle<" + distAngle + ">";
+	}
 }

@@ -38,6 +38,7 @@ public class Pilot implements RobotListener
 		this.pos = new Position(0, 0);
 		
 		robot.addRobotListener(mcl);
+		robot.addRobotListener(this);
 		listener = new ArrayList<>();
 		
 		run = true;
