@@ -77,6 +77,21 @@ public class MCL implements RobotListener
 		
 		fireEvent();
 	}
+	
+	public void normalizeWeights()
+	{
+		double max = 0d;
+		
+		for(Particle p : particles)
+		{
+			max = Math.max(max, p.getWeight());
+		}
+		
+		for(Particle p : particles)
+		{
+			p.setWeight(p.getWeight() / max);
+		}
+	}
 
 	public List<Particle> getParticles()
 	{
@@ -133,6 +148,9 @@ public class MCL implements RobotListener
 	
 	public Particle getBest()
 	{
+		// TODO $DeH select considering all particles
+		// i. e. maybe we have a heap full of nearly-best particles
+		// than we should return one particle in the center of the heap
 		return Collections.max(particles);
 	}
 }

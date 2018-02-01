@@ -12,7 +12,7 @@ public class Particle implements Cloneable, Comparable<Particle>
 	{
 		this.pos = pos;
 		this.theta = theta;
-		weight = 1000d;
+		weight = 1d;
 	}
 	
 	public Position getPos()
