@@ -66,11 +66,12 @@ public class Ev3Robot implements Robot
 	{
 		final String[] parts = realMeasures.split(Command.SEPARATOR);
 		int colorId = (int)Double.parseDouble(parts[0]);
+		int numDistances = (int)Double.parseDouble(parts[1]);
 		List<RobotDistance> distances = new ArrayList<>();
-		for(int i = 1; i < parts.length; i += 2)
+		for(int i = 0; i < numDistances; ++i)
 		{
-			double dist = Double.parseDouble(parts[i]);
-			double distAngle = Double.parseDouble(parts[i + 1]);
+			double dist = Double.parseDouble(parts[2 + i * 2]);
+			double distAngle = Double.parseDouble(parts[2 + i * 2 + 1]);
 			
 			distances.add(new RobotDistance(dist, distAngle));
 		}
