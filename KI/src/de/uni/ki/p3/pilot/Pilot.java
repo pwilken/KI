@@ -23,6 +23,9 @@ public class Pilot implements RobotListener
 	private volatile boolean automatic;
 	
 	private volatile RobotMeasurement lastMeasurement;
+	private double moveDist;
+	private double rotateAngle;
+	private double minDistFromWall;
 	
 	private Thread stepper;
 	
@@ -40,6 +43,10 @@ public class Pilot implements RobotListener
 		run = true;
 		step = false;
 		automatic = false;
+		
+		moveDist = 10d;
+		rotateAngle = 30d;
+		minDistFromWall = 10;
 		
 		stepper = new Thread(new Runnable()
     		{
@@ -106,7 +113,27 @@ public class Pilot implements RobotListener
 	private void nextStepInt()
 	{
 		// TODO $DeH
-		robot.move(10);
+		if(lastMeasurement != null)
+		{
+			RobotDistance d = lastMeasurement.getDistance(0d);
+			
+			if(d == null)
+			{
+				// TODO $DeH
+				// handle this case if it ever happens
+			}
+			else
+			{
+				if(d.getDist() > moveDist + minDistFromWall)
+				{
+					robot.move(moveDist);
+				}
+				else
+				{
+					robot.rotate(rotateAngle);
+				}
+			}
+		}
 		robot.measure();
 		
 		for(PilotListener l : listener)
