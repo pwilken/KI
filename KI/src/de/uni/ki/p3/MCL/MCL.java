@@ -8,6 +8,7 @@ public class MCL implements RobotListener
 {
 	private List<Particle> particles;
 	private MCLConfiguration config;
+	private MCLParticleGenerator generator;
 	private MCLWeightFunction weighter;
 	private MCLResampler resampler;
 	private RangeMap map;
@@ -17,9 +18,8 @@ public class MCL implements RobotListener
 	{
 		particles = new Vector<>();
 		this.config = config;
-//		weighter = new MCLDefaultWeightFunction();
+		generator = new MCLLejosParticleGenerator();
 		weighter = new MCLLejosWeightFunction();
-//		resampler = new MCLDefaultResampler();
 		resampler = new MCLLejosResampler();
 		this.map = map;
 		listener = new ArrayList<>();
@@ -29,11 +29,7 @@ public class MCL implements RobotListener
 	{
 		for(int i = 0; i < config.initialParticleCount; ++i)
 		{
-			Particle p = new Particle(
-				new Position(
-    				config.initialParticlePosX + config.random.nextDouble() * config.initialParticlePosWidth,
-    				config.initialParticlePosY + config.random.nextDouble() * config.initialParticlePosHeight),
-				config.minAngle + config.random.nextDouble() * (config.maxAngle - config.minAngle));
+			Particle p = generator.generateParticle(this);
 			particles.add(p);
 		}
 		
@@ -116,6 +112,16 @@ public class MCL implements RobotListener
 		{
 			l.particlesChanged(this);
 		}
+	}
+	
+	public MCLParticleGenerator getGenerator()
+	{
+		return generator;
+	}
+	
+	public void setGenerator(MCLParticleGenerator generator)
+	{
+		this.generator = generator;
 	}
 	
 	public MCLWeightFunction getWeighter()
