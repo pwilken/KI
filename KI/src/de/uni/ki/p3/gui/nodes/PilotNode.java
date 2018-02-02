@@ -40,6 +40,8 @@ public class PilotNode extends Group implements PilotListener, MCLListener
 		angle.setAngle(pilot.getTheta());
 		l.getTransforms().add(angle);
 		getChildren().addAll(body, l);
+		
+		particlesChanged(pilot.getMcl());
 	}
 
 	@Override

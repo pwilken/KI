@@ -46,14 +46,14 @@ public class GraphicNode
 			});
 		
 		pilot.addListener(new ChangeListener<Pilot>()
-		{
-			@Override
-			public void changed(ObservableValue<? extends Pilot> observable,
-							Pilot oldValue, Pilot newValue)
-			{
-				newPilot(newValue);
-			}
-		});
+    		{
+    			@Override
+    			public void changed(ObservableValue<? extends Pilot> observable,
+    							Pilot oldValue, Pilot newValue)
+    			{
+    				newPilot(newValue);
+    			}
+    		});
 		
 		ChangeListener<Number> cl = new ChangeListener<Number>()
     		{
