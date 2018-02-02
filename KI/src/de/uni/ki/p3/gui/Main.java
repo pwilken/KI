@@ -1,6 +1,7 @@
 package de.uni.ki.p3.gui;
 
 import java.io.*;
+import java.util.Random;
 import java.util.concurrent.Callable;
 
 import de.uni.ki.p3.MCL.*;
@@ -182,39 +183,18 @@ public class Main extends Application
 			},
 			robot));
 		
-		txtSeed.textProperty().addListener(
-			new ChangeListener<String>()
-			{
-				@Override
-				public void changed(
-								ObservableValue<? extends String> observable,
-								String oldValue, String newValue)
-				{
-					try
-					{
-						// TODO $DeH
-						long seed = Integer.parseInt(newValue);
-//						config.random = new Random(seed);
-					}
-					catch(RuntimeException e)
-					{
-//						config.random = new Random();
-						e.printStackTrace();
-					}
-				}
-			});
-		
 		rangeMap.bind(Bindings.createObjectBinding(
 			new Callable<RangeMap>()
 			{
 				@Override
-				public SvgRangeMap call() throws Exception
+				public RangeMap call() throws Exception
 				{
 					if(svgDocument.get() == null)
 					{
 						return null;
 					}
-					return new SvgRangeMap(svgDocument.get());
+//					return new SvgRangeMap(svgDocument.get());
+					return new SvgLejosRangeMap(svgDocument.get());
 				}
 			},
 			svgDocument));
@@ -350,6 +330,15 @@ public class Main extends Application
 		catch(RuntimeException e)
 		{
 			config.angleTolerance = 0d;
+		}
+		
+		try
+		{
+			config.random = new Random(Long.parseLong(txtSeed.getText()));
+		}
+		catch(RuntimeException e)
+		{
+			config.random = new Random();
 		}
 	}
 	
