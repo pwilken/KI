@@ -16,7 +16,7 @@
       <VBox spacing="5.0" BorderPane.alignment="CENTER">
          <children>
             <Button mnemonicParsing="false" onAction="#loadMap" text="Karte laden" />
-            <RadioButton fx:id="radSimu" mnemonicParsing="false" text="Simulation" />
+            <RadioButton fx:id="radSimu" mnemonicParsing="false" selected="true" text="Simulation" />
             <RadioButton fx:id="radEv3" mnemonicParsing="false" text="EV3" />
             <VBox fx:id="parentEv3">
                <children>
@@ -64,7 +64,7 @@
                   </VBox>
                </content>
             </TitledPane>
-            <TitledPane expanded="false" text="Simu-Konfiguration">
+            <TitledPane fx:id="parentSimu" expanded="false" text="Simu-Konfiguration">
                <content>
                   <VBox prefHeight="200.0" prefWidth="100.0">
                      <children>
@@ -78,6 +78,20 @@
                         <TextField fx:id="txtSimuAngleTol" text="0" />
                         <Label text="Winkel" />
                         <TextField fx:id="txtSimuAngles" />
+                     </children>
+                  </VBox>
+               </content>
+            </TitledPane>
+            <TitledPane fx:id="parentPilot" expanded="false" text="Pilot-Konfiguration">
+               <content>
+                  <VBox>
+                     <children>
+                        <Label text="Geschwindigkeit" />
+                        <TextField fx:id="txtPilotMove" text="10" />
+                        <Label layoutX="22.0" layoutY="22.0" text="Rotation" />
+                        <TextField fx:id="txtPilotRot" layoutX="22.0" layoutY="43.0" text="30" />
+                        <Label layoutX="22.0" layoutY="74.0" text="Distanz" />
+                        <TextField fx:id="txtPilotMinDist" layoutX="22.0" layoutY="95.0" text="10" />
                      </children>
                   </VBox>
                </content>

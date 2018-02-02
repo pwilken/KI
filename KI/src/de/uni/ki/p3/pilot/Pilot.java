@@ -183,6 +183,36 @@ public class Pilot implements RobotListener
 	{
 		return theta;
 	}
+	
+	public double getMoveDist()
+	{
+		return moveDist;
+	}
+	
+	public void setMoveDist(double moveDist)
+	{
+		this.moveDist = moveDist;
+	}
+	
+	public double getRotateAngle()
+	{
+		return rotateAngle;
+	}
+	
+	public void setRotateAngle(double rotateAngle)
+	{
+		this.rotateAngle = rotateAngle;
+	}
+	
+	public double getMinDistFromWall()
+	{
+		return minDistFromWall;
+	}
+	
+	public void setMinDistFromWall(double minDistFromWall)
+	{
+		this.minDistFromWall = minDistFromWall;
+	}
 
 	@Override
 	public void robotMoved(Robot robot, double dist)

@@ -53,6 +53,10 @@ public class Main extends Application
 	@FXML
 	private Parent parentConfig;
 	@FXML
+	private Parent parentSimu;
+	@FXML
+	private Parent parentPilot;
+	@FXML
 	private TextField txtSeed;
 	@FXML
 	private Pane pane;
@@ -78,6 +82,12 @@ public class Main extends Application
 	private TextField txtSimuAngleTol;
 	@FXML
 	private TextField txtSimuAngles;
+	@FXML
+	private TextField txtPilotMove;
+	@FXML
+	private TextField txtPilotRot;
+	@FXML
+	private TextField txtPilotMinDist;
 	private GraphicNode graphicNode;
 	
 	private ObjectProperty<SvgDocument> svgDocument;
@@ -103,7 +113,9 @@ public class Main extends Application
 		initFields();
 		initListener();
 		
-		config.initialParticleCount = Integer.parseInt(txtNum.getText());
+		setTxtValuesCfg();
+		
+		robot.set(new SimRobot());
 	}
 	
 	private void initFields()
@@ -340,6 +352,15 @@ public class Main extends Application
 		{
 			config.random = new Random();
 		}
+		
+		try
+		{
+			config.initialParticleCount = Integer.parseInt(txtNum.getText());
+		}
+		catch(RuntimeException e)
+		{
+			config.initialParticleCount = 200;
+		}
 	}
 	
 	private void setTxtValuesSimu(SimRobot simRobot)
@@ -437,10 +458,42 @@ public class Main extends Application
 	{
 		if(pilot.get() == null)
 		{
-			pilot.set(new Pilot(robot.get(), rangeMap.get(), config));
+			crePilot();
 		}
 		
 		pilot.get().start();
+	}
+
+	private void crePilot()
+	{
+		pilot.set(new Pilot(robot.get(), rangeMap.get(), config));
+		
+		try
+		{
+			pilot.get().setMoveDist(Double.parseDouble(txtPilotMove.getText()));
+		}
+		catch(RuntimeException e)
+		{
+			pilot.get().setMoveDist(10d);
+		}
+		
+		try
+		{
+			pilot.get().setRotateAngle(Double.parseDouble(txtPilotRot.getText()));
+		}
+		catch(RuntimeException e)
+		{
+			pilot.get().setRotateAngle(30d);
+		}
+		
+		try
+		{
+			pilot.get().setMinDistFromWall(Double.parseDouble(txtPilotMinDist.getText()));
+		}
+		catch(RuntimeException e)
+		{
+			pilot.get().setMinDistFromWall(10d);
+		}
 	}
 
 	@FXML
@@ -457,7 +510,7 @@ public class Main extends Application
 	{
 		if(pilot.get() == null)
 		{
-			pilot.set(new Pilot(robot.get(), rangeMap.get(), config));
+			crePilot();
 		}
 		pilot.get().nextStep();
 	}
