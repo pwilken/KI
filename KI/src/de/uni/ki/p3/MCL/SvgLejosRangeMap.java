@@ -115,18 +115,24 @@ public class SvgLejosRangeMap implements RangeMap
 
 		// Create a line from the point to the left
 		Line l = new Line(pos.getX(), pos.getY(), pos.getX() - width, pos.getY());
+		Line l2 = new Line(pos.getX(), pos.getY(), pos.getX() + width, pos.getY());
 
 		// Count intersections
 		int count = 0;
+		int count2 = 0;
 		for(Line ll : lines)
 		{
 			if(ll.intersectsAt(l) != null)
 			{
 				count++;
 			}
+			if(ll.intersectsAt(l2) != null)
+			{
+				count2++;
+			}
 		}
 		// We are inside if the number of intersections is odd
-		return count % 2 == 1;
+		return count % 2 == 1 || count2 % 2 == 1;
 	}
 
 	private class Line
