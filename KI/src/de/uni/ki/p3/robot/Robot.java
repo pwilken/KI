@@ -3,21 +3,13 @@
  */
 package de.uni.ki.p3.robot;
 
-import de.uni.ki.p3.MCL.Position;
-
-import java.util.List;
-
 public interface Robot
 {
 	public void move(double dist);
 	public void rotate(double angle);
 	public void measure();
-	
-	public Position getPos();
-	public double getTheta();
-	public double getDistAngle();
+	public void terminate();
 	
 	public void addRobotListener(RobotListener l);
 	public void removeRobotListener(RobotListener l);
-	public List<RobotListener> getRobotListener();
 }

@@ -9,4 +9,6 @@ public interface RangeMap
 	public String strokeAt(Position pos);
 	public double getWidth();
 	public double getHeight();
+	public boolean isClosed();
+	public boolean isInside(Position pos);
 }

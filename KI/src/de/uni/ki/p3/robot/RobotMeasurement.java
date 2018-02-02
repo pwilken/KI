@@ -3,19 +3,24 @@
  */
 package de.uni.ki.p3.robot;
 
+import java.util.*;
+
 import de.uni.ki.p3.KIUtil;
 
 public class RobotMeasurement
 {
 	private int colorId;
-	private double dist;
-	private double distAngle;
+	private List<RobotDistance> distances;
 	
 	public RobotMeasurement(int colorId, double dist, double distAngle)
 	{
+		this(colorId, Arrays.asList(new RobotDistance(dist, distAngle)));
+	}
+	
+	public RobotMeasurement(int colorId, List<RobotDistance> distances)
+	{
 		this.colorId = colorId;
-		this.dist = dist;
-		this.distAngle = distAngle;
+		this.distances = Collections.unmodifiableList(distances);
 	}
 	
 	public int getColorId()
@@ -23,50 +28,40 @@ public class RobotMeasurement
 		return colorId;
 	}
 	
-	public double getDist()
+	public List<RobotDistance> getDistances()
 	{
-		return dist;
+		return distances;
 	}
 	
-	public double getDistAngle()
+	public RobotDistance getDistance(double angle)
 	{
-		return distAngle;
+		for(RobotDistance dist : distances)
+		{
+			if(KIUtil.equals(angle, dist.getDistAngle()))
+			{
+				return dist;
+			}
+		}
+		
+		return null;
 	}
-
-	@Override
-	public int hashCode()
-	{
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + colorId;
-		long temp;
-		temp = Double.doubleToLongBits(dist);
-		result = prime * result + (int)(temp ^ (temp >>> 32));
-		temp = Double.doubleToLongBits(distAngle);
-		result = prime * result + (int)(temp ^ (temp >>> 32));
-		return result;
-	}
-
+	
 	@Override
 	public boolean equals(Object obj)
 	{
-		if(!(obj instanceof RobotMeasurement))
+		if(obj instanceof RobotMeasurement)
 		{
-			return false;
+			RobotMeasurement m = (RobotMeasurement)obj;
+			
+			return colorId == m.colorId && distances.equals(m.distances);
 		}
 		
-		RobotMeasurement r = (RobotMeasurement)obj;
-		
-		if(!KIUtil.equals(dist, r.dist))
-		{
-			return false;
-		}
-		
-		if(!KIUtil.equals(distAngle, r.distAngle))
-		{
-			return false;
-		}
-		
-		return true;
+		return false;
+	}
+
+	@Override
+	public String toString()
+	{
+		return "Measurment(" + colorId + ", " + distances + ")";
 	}
 }

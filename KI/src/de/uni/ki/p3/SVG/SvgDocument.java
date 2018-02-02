@@ -70,32 +70,45 @@ public class SvgDocument
 	
 	private SvgElement parseElement(Element e)
 	{
-		if(e.getNodeName().equals("line"))
+		switch(e.getNodeName())
 		{
-			return new SvgLine(
+			case "line":
+			{
+				return new SvgLine(
 					Double.parseDouble(e.getAttribute("x1")),
 					Double.parseDouble(e.getAttribute("y1")),
 					Double.parseDouble(e.getAttribute("x2")),
 					Double.parseDouble(e.getAttribute("y2")),
 					e.getAttribute("stroke"));
-		}
-		else if(e.getNodeName().equals("rect"))
-		{
-			return new SvgRect(
+			}
+			case "rect":
+			{
+				return new SvgRect(
 					Double.parseDouble(e.getAttribute("x")),
 					Double.parseDouble(e.getAttribute("y")),
 					Double.parseDouble(e.getAttribute("width")),
 					Double.parseDouble(e.getAttribute("height")),
 					e.getAttribute("stroke"));
-		}
-		else if(e.getNodeName().equals("g"))
-		{
-			return parseList(e.getChildNodes());
-		}
-		else
-		{
-			// TODO $DeH
-			throw new RuntimeException();
+			}
+			case "g":
+			{
+				return parseList(e.getChildNodes());
+			}
+			case "circle":
+			{
+				return new SvgCircle(
+					e.getAttribute("id"),
+					Double.parseDouble(e.getAttribute("cx")),
+					Double.parseDouble(e.getAttribute("cy")),
+					Double.parseDouble(e.getAttribute("r")),
+					e.getAttribute("stroke"),
+					e.getAttribute("fill"));
+			}
+			default:
+			{
+				// TODO $DeH
+				throw new RuntimeException();
+			}
 		}
 	}
 	

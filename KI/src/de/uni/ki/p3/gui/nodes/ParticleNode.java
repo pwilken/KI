@@ -1,7 +1,7 @@
 /*
  * Copyright © 2018 Unitechnik Systems GmbH. All Rights Reserved.
  */
-package de.uni.ki.p3.Drawing;
+package de.uni.ki.p3.gui.nodes;
 
 import de.uni.ki.p3.MCL.Particle;
 import javafx.scene.Group;
@@ -13,7 +13,10 @@ public class ParticleNode extends Group
 {
 	public ParticleNode(Particle p)
 	{
-		Circle c = new Circle(p.getPos().getX(), p.getPos().getY(), 1d, Color.BLUE);
+		setOpacity(p.getWeight());
+		Circle c = new Circle(p.getPos().getX(), p.getPos().getY(), 2.5d, Color.BLUE);
+		Color col = new Color(Color.BLUE.getRed(), Color.BLUE.getGreen(), Color.BLUE.getBlue(), 1d);
+		c.setFill(col);
 		Line l = new Line(0d, 0d, 1d, 1d);
 		l.setStroke(Color.YELLOW);
 		l.setStrokeWidth(0.25);
