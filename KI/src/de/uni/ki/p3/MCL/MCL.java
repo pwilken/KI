@@ -17,8 +17,10 @@ public class MCL implements RobotListener
 	{
 		particles = new Vector<>();
 		this.config = config;
-		weighter = new MCLDefaultWeightFunction();
-		resampler = new MCLDefaultResampler();
+//		weighter = new MCLDefaultWeightFunction();
+		weighter = new MCLLejosWeightFunction();
+//		resampler = new MCLDefaultResampler();
+		resampler = new MCLLejosResampler();
 		this.map = map;
 		listener = new ArrayList<>();
 	}
