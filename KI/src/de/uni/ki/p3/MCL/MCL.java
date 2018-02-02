@@ -15,7 +15,7 @@ public class MCL implements RobotListener
 	
 	public MCL(RangeMap map, MCLConfiguration config)
 	{
-		particles = new ArrayList<>();
+		particles = new Vector<>();
 		this.config = config;
 		weighter = new MCLDefaultWeightFunction();
 		resampler = new MCLDefaultResampler();

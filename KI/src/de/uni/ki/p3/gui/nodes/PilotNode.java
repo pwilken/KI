@@ -71,7 +71,8 @@ public class PilotNode extends Group implements PilotListener, MCLListener
     				children.add(body);
     				children.add(l);
     				
-    				for(Particle p : mcl.getParticles())
+    				List<Particle> copy = new ArrayList<>(mcl.getParticles());
+    				for(Particle p : copy)
     				{
     					children.add(new ParticleNode(p));
     				}
