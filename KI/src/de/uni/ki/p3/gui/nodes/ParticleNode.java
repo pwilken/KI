@@ -13,8 +13,9 @@ public class ParticleNode extends Group
 {
 	public ParticleNode(Particle p)
 	{
-		Circle c = new Circle(p.getPos().getX(), p.getPos().getY(), 1d, Color.BLUE);
-		Color col = new Color(Color.BLUE.getRed(), Color.BLUE.getGreen(), Color.BLUE.getBlue(), p.getWeight() / 1000d);
+		setOpacity(p.getWeight());
+		Circle c = new Circle(p.getPos().getX(), p.getPos().getY(), 2.5d, Color.BLUE);
+		Color col = new Color(Color.BLUE.getRed(), Color.BLUE.getGreen(), Color.BLUE.getBlue(), 1d);
 		c.setFill(col);
 		Line l = new Line(0d, 0d, 1d, 1d);
 		l.setStroke(Color.YELLOW);
