@@ -79,6 +79,22 @@ public class Pilot implements RobotListener
 		automatic = true;
 	}
 	
+	public void stop()
+	{
+		automatic = false;
+		step = false;
+	}
+	
+	public boolean isRunning()
+	{
+		return isAlive() && (automatic || step);
+	}
+	
+	public boolean isAlive()
+	{
+		return stepper.isAlive() && run;
+	}
+	
 	private void runLoop()
 	{
 		while(run)

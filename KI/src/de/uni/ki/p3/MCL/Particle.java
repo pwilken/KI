@@ -95,4 +95,10 @@ public class Particle implements Cloneable, Comparable<Particle>
 	{
 		return Double.compare(weight, o.weight);
 	}
+	
+	@Override
+	public String toString()
+	{
+		return "Particle(" + pos + "/" + theta + ")";
+	}
 }

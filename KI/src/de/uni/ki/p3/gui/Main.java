@@ -425,6 +425,38 @@ public class Main extends Application
 		}
 	}
 	
+	private void crePilot()
+	{
+		pilot.set(new Pilot(robot.get(), rangeMap.get(), config));
+		
+		try
+		{
+			pilot.get().setMoveDist(Double.parseDouble(txtPilotMove.getText()));
+		}
+		catch(RuntimeException e)
+		{
+			pilot.get().setMoveDist(10d);
+		}
+		
+		try
+		{
+			pilot.get().setRotateAngle(Double.parseDouble(txtPilotRot.getText()));
+		}
+		catch(RuntimeException e)
+		{
+			pilot.get().setRotateAngle(30d);
+		}
+		
+		try
+		{
+			pilot.get().setMinDistFromWall(Double.parseDouble(txtPilotMinDist.getText()));
+		}
+		catch(RuntimeException e)
+		{
+			pilot.get().setMinDistFromWall(10d);
+		}
+	}
+
 	@FXML
 	private void loadMap()
 	{
@@ -464,44 +496,20 @@ public class Main extends Application
 		pilot.get().start();
 	}
 
-	private void crePilot()
-	{
-		pilot.set(new Pilot(robot.get(), rangeMap.get(), config));
-		
-		try
-		{
-			pilot.get().setMoveDist(Double.parseDouble(txtPilotMove.getText()));
-		}
-		catch(RuntimeException e)
-		{
-			pilot.get().setMoveDist(10d);
-		}
-		
-		try
-		{
-			pilot.get().setRotateAngle(Double.parseDouble(txtPilotRot.getText()));
-		}
-		catch(RuntimeException e)
-		{
-			pilot.get().setRotateAngle(30d);
-		}
-		
-		try
-		{
-			pilot.get().setMinDistFromWall(Double.parseDouble(txtPilotMinDist.getText()));
-		}
-		catch(RuntimeException e)
-		{
-			pilot.get().setMinDistFromWall(10d);
-		}
-	}
-
 	@FXML
 	private void doStop()
 	{
 		if(pilot.get() != null)
 		{
-			pilot.get().terminate();
+			if(pilot.get().isRunning())
+			{
+				pilot.get().stop();
+			}
+			else
+			{
+				pilot.get().terminate();
+				pilot.set(null);
+			}
 		}
 	}
 	
@@ -512,6 +520,9 @@ public class Main extends Application
 		{
 			crePilot();
 		}
-		pilot.get().nextStep();
+		else
+		{
+			pilot.get().nextStep();
+		}
 	}
 }
