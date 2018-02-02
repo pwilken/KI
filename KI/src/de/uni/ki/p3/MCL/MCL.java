@@ -29,9 +29,9 @@ public class MCL implements RobotListener
 		{
 			Particle p = new Particle(
 				new Position(
-    				config.initialParticlePosX + Math.random() * config.initialParticlePosWidth,
-    				config.initialParticlePosY + Math.random() * config.initialParticlePosHeight),
-				config.minAngle + Math.random() * (config.maxAngle - config.minAngle));
+    				config.initialParticlePosX + config.random.nextDouble() * config.initialParticlePosWidth,
+    				config.initialParticlePosY + config.random.nextDouble() * config.initialParticlePosHeight),
+				config.minAngle + config.random.nextDouble() * (config.maxAngle - config.minAngle));
 			particles.add(p);
 		}
 		
