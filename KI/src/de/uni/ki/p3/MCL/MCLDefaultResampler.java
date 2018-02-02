@@ -36,7 +36,6 @@ public class MCLDefaultResampler implements MCLResampler
 			
 			beta += incr;
 			Particle p = creVariantOf(mcl, particles.get(index), mcl.getMap());
-			
 			newParticles.add(p);
 		}
 		return newParticles;
@@ -55,6 +54,7 @@ public class MCLDefaultResampler implements MCLResampler
     		
     		if(mcl.getMap().isInside(pp.getPos()))
     		{
+    			pp.setWeight(p.getWeight());
     			return pp;
     		}
 		}
@@ -64,6 +64,7 @@ public class MCLDefaultResampler implements MCLResampler
 				p.getPos().getX(),
 				p.getPos().getY()),
 				p.getTheta());
+		pp.setWeight(p.getWeight());
 		return pp;
 	}
 
