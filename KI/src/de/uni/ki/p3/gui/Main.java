@@ -277,6 +277,7 @@ public class Main extends Application
 		txtTolX.textProperty().addListener(configCl);
 		txtTolY.textProperty().addListener(configCl);
 		txtTolAngle.textProperty().addListener(configCl);
+		txtNum.textProperty().addListener(configCl);
 		
 		ChangeListener<String> simuCl = new ChangeListener<String>()
     		{
