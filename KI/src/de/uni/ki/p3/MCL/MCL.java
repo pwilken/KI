@@ -150,9 +150,57 @@ public class MCL implements RobotListener
 	
 	public Particle getBest()
 	{
-		// TODO $DeH select considering all particles
-		// i. e. maybe we have a heap full of nearly-best particles
-		// than we should return one particle in the center of the heap
-		return Collections.max(particles);
-	}
+		final int numParticles = config.initialParticleCount;
+		
+	    double totalWeights = 0;
+	    double estimatedX = 0;
+	    double estimatedY = 0;
+	    double estimatedAngle = 0;
+	    double varX = 0;
+	    double varY = 0;
+	    double varH = 0;
+	    double minX = 1000000d;
+	    double minY = 1000000d;
+	    double maxX = -1000000d;
+	    double maxY = -1000000d;
+
+	    for (int i = 0; i < numParticles; i++)
+	    {
+	      Particle p = particles.get(i);
+	      double x = p.getPos().getX();
+	      double y = p.getPos().getY();
+	      //float weight = particles.getParticle(i).getWeight();
+	      double weight = 1; // weight is historic at this point, as resample has been done
+	      estimatedX += (x * weight);
+	      varX += (x * x * weight);
+	      estimatedY += (y * weight);
+	      varY += (y * y * weight);
+	      double head = p.getTheta();
+	      estimatedAngle += (head * weight);
+	      varH += (head * head * weight);
+	      totalWeights += weight;
+
+	      if (x < minX)  minX = x;
+
+	      if (x > maxX)maxX = x;
+	      if (y < minY)minY = y;
+	      if (y > maxY)   maxY = y;
+	    }
+
+	    estimatedX /= totalWeights;
+	    varX /= totalWeights;
+	    varX -= (estimatedX * estimatedX);
+	    estimatedY /= totalWeights;
+	    varY /= totalWeights;
+	    varY -= (estimatedY * estimatedY);
+	    estimatedAngle /= totalWeights;
+	    varH /= totalWeights;
+	    varH -= (estimatedAngle * estimatedAngle);
+	    
+	    // Normalize angle
+	    while (estimatedAngle > 180) estimatedAngle -= 360;
+	    while (estimatedAngle < -180) estimatedAngle += 360;
+	    
+	    return new Particle(new Position(estimatedX, estimatedY),  estimatedAngle);
+	  }
 }

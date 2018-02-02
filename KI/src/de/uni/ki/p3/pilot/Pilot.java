@@ -152,6 +152,9 @@ public class Pilot implements RobotListener
 			}
 		}
 		robot.measure();
+		Particle best = mcl.getBest();
+		pos = best.getPos();
+		theta = best.getTheta();
 		
 		for(PilotListener l : listener)
 		{
