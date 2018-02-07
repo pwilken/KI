@@ -141,8 +141,14 @@ public class Pilot implements RobotListener
 			}
 			else
 			{
-				if (Math.random() >= 0.95) {
-					robot.rotate(Math.random() * 360);
+				if (Math.random() >= 0.95)
+				{
+					double angle = Math.random() * 180 + 90;
+					if(angle > 180)
+					{
+						angle = angle - 360;
+					}
+					robot.rotate(angle);
 				}
 				else if(d.getDist() > moveDist + minDistFromWall)
 				{
@@ -150,7 +156,12 @@ public class Pilot implements RobotListener
 				}
 				else
 				{
-					robot.rotate(Math.random() * 270 + 90);
+					double angle = Math.random() * 180 + 90;
+					if(angle > 180)
+					{
+						angle = angle - 360;
+					}
+					robot.rotate(angle);
 				}
 			}
 		}

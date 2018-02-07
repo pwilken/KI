@@ -75,7 +75,13 @@ public class SimRobot implements Robot
 	{
 		RobotMeasurement measurement = new RobotMeasurement(
 			map.strokeAt(pos) == null ? Color.NONE : Color.BLACK,
-			getDistances(pos, theta, measureAngles));
+			getDistances(pos, theta, measureAngles),
+			new RobotPixyRect("",
+				0,
+				0,
+				0,
+				0,
+				0));
 		
 		for(RobotListener l : listener)
 		{

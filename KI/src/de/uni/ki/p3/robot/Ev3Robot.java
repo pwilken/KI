@@ -56,6 +56,8 @@ public class Ev3Robot implements Robot
 
 		RobotMeasurement rm = parseMeasurement(realMeasures);
 		
+		System.out.println(rm.getDistance(0));
+		
 		for(RobotListener l : listener)
 		{
 			l.robotMeasured(this, rm);
@@ -65,18 +67,38 @@ public class Ev3Robot implements Robot
 	private RobotMeasurement parseMeasurement(String realMeasures)
 	{
 		final String[] parts = realMeasures.split(Command.SEPARATOR);
-		int colorId = (int)Double.parseDouble(parts[0]);
+		
+		int i = 0;
+		
+		int colorId = (int)Double.parseDouble(parts[i++]);
+		
+		int x = (int)Double.parseDouble(parts[i++]);
+		int y = (int)Double.parseDouble(parts[i++]);
+		int width = (int)Double.parseDouble(parts[i++]);
+		int height = (int)Double.parseDouble(parts[i++]);
+		int angle = (int)Double.parseDouble(parts[i++]);
+		String colorCode = parts[i++];
+		
 		int numDistances = (int)Double.parseDouble(parts[1]);
 		List<RobotDistance> distances = new ArrayList<>();
-		for(int i = 0; i < numDistances; ++i)
+		for(int j = 0; j < numDistances; ++j)
 		{
-			double dist = Double.parseDouble(parts[2 + i * 2]);
-			double distAngle = Double.parseDouble(parts[2 + i * 2 + 1]);
+			double dist = Double.parseDouble(parts[i++]);
+			double distAngle = Double.parseDouble(parts[i++]);
 			
 			distances.add(new RobotDistance(dist, distAngle));
 		}
 
-		RobotMeasurement robotMeasurement = new RobotMeasurement(colorId, distances);
+		RobotMeasurement robotMeasurement = new RobotMeasurement(
+			colorId,
+			distances,
+			new RobotPixyRect(
+				colorCode,
+				angle,
+				x,
+				y,
+				width,
+				height));
 		return robotMeasurement;
 	}
 

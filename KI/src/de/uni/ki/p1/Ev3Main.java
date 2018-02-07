@@ -3,17 +3,40 @@
  */
 package de.uni.ki.p1;
 
+import lejos.hardware.Button;
 import lejos.robotics.Color;
 
 public class Ev3Main
 {
 	public static void main(String[] args) throws Exception
 	{
+		startExitThread();
+		
 		LocalRobot r = new LocalRobot();
 		
 		r.connect();
 	}
 	
+	private static void startExitThread()
+	{
+		Thread t = new Thread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				while(true)
+				{
+					Button.waitForAnyPress();
+					if(Button.ESCAPE.isDown())
+					{
+						System.exit(0);
+					}
+				}
+			}
+		});
+		t.start();
+	}
+
 	public static String ColorToString(int i)
 	{
 		switch(i)
