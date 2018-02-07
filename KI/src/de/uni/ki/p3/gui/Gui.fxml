@@ -60,6 +60,10 @@
                               <TextField fx:id="txtTolAngle" prefWidth="50.0" text="0" />
                            </children>
                         </HBox>
+                        <Label layoutX="22.0" layoutY="126.0" text="Sigma" />
+                        <TextField fx:id="txtSigma" layoutX="22.0" layoutY="95.0" text="400" />
+                        <Label layoutX="22.0" layoutY="230.0" text="max. Iterationen" />
+                        <TextField fx:id="txtIter" layoutX="22.0" layoutY="251.0" text="1000" />
                      </children>
                   </VBox>
                </content>
@@ -77,7 +81,7 @@
                         <Label text="Measure-Angle-Toleranz" />
                         <TextField fx:id="txtSimuAngleTol" text="0" />
                         <Label text="Winkel" />
-                        <TextField fx:id="txtSimuAngles" />
+                        <TextField fx:id="txtSimuAngles" text="0" />
                      </children>
                   </VBox>
                </content>

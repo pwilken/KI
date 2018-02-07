@@ -11,7 +11,7 @@ public class MCLLejosResampler implements MCLResampler
 	@Override
 	public List<Particle> resample(MCL mcl, List<Particle> particles)
 	{
-		final int maxIterations = 1000;
+		final int maxIterations = mcl.getConfig().maxIterations;
 		final int numParticles = mcl.getConfig().initialParticleCount;
 
 		// Rename particles as oldParticles and create a new set

@@ -141,13 +141,16 @@ public class Pilot implements RobotListener
 			}
 			else
 			{
-				if(d.getDist() > moveDist + minDistFromWall)
+				if (Math.random() >= 0.95) {
+					robot.rotate(Math.random() * 360);
+				}
+				else if(d.getDist() > moveDist + minDistFromWall)
 				{
 					robot.move(moveDist);
 				}
 				else
 				{
-					robot.rotate(rotateAngle);
+					robot.rotate(Math.random() * 270 + 90);
 				}
 			}
 		}

@@ -14,6 +14,9 @@ public class MCLConfiguration
 	public double initialParticlePosWidth = Double.MAX_VALUE;
 	public double initialParticlePosHeight = Double.MAX_VALUE;
 	
+	public double sigma = 400d;
+	public int maxIterations = 1000;
+	
 	public double minAngle = 0d;
 	public double maxAngle = 360d;
 	
