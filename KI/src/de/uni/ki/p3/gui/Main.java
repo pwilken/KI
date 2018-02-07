@@ -73,6 +73,10 @@ public class Main extends Application
 	@FXML
 	private TextField txtTolAngle;
 	@FXML
+	private TextField txtSigma;
+	@FXML
+	private TextField txtIter;
+	@FXML
 	private TextField txtSimuMoveTol;
 	@FXML
 	private TextField txtSimuRotTol;
@@ -352,6 +356,24 @@ public class Main extends Application
 		catch(RuntimeException e)
 		{
 			config.random = new Random();
+		}
+		
+		try
+		{
+			config.sigma = Double.parseDouble(txtSigma.getText());
+		}
+		catch(RuntimeException e)
+		{
+			config.sigma = 400;
+		}
+		
+		try
+		{
+			config.maxIterations = Integer.parseInt(txtIter.getText());
+		}
+		catch(RuntimeException e)
+		{
+			config.maxIterations = 1000;
 		}
 		
 		try
