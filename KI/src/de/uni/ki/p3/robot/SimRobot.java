@@ -94,7 +94,7 @@ public class SimRobot implements Robot
 		for(MCLMarker ma : map.getMarkers())
 		{
 			KIDistance dist = map.distanceToMarker(getPos(), ma);
-			if(dist.getDistAngle() < 0)
+			if(Double.isInfinite(dist.getDist()))
 			{
 				continue;
 			}

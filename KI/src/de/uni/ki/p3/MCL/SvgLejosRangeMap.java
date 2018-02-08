@@ -154,14 +154,6 @@ public class SvgLejosRangeMap implements RangeMap
 		SvgCircle c = getMarkerCircle(marker);
 		Line line = new Line(pos.getX(), pos.getY(), c.getCx(), c.getCy());
 		
-		for(Line l : lines)
-		{
-			if(line.intersectsAt(l) != null)
-			{
-				return new KIDistance(Double.POSITIVE_INFINITY, -1);
-			}
-		}
-		
 		double dx = line.x2 - line.x1;
 		double dy = line.y2 - line.y1;
 		
@@ -171,6 +163,14 @@ public class SvgLejosRangeMap implements RangeMap
 		if(angle < 0)
 		{
 			angle += 360;
+		}
+		
+		for(Line l : lines)
+		{
+			if(line.intersectsAt(l) != null)
+			{
+				return new KIDistance(Double.POSITIVE_INFINITY, angle);
+			}
 		}
 		
 		return new KIDistance(Math.sqrt(dx * dx + dy * dy), angle);
