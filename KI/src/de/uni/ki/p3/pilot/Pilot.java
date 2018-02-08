@@ -24,6 +24,8 @@ public class Pilot implements RobotListener
 	
 	private volatile RobotMeasurement lastMeasurement;
 	private double moveDist;
+	private double sameDistanceTolerance = 2.5;
+	private double oldDist;
 	private double rotateAngle;
 	private double minDistFromWall;
 	
@@ -150,6 +152,10 @@ public class Pilot implements RobotListener
 					}
 					robot.rotate(angle);
 				}
+				else if(oldDist >= d.getDist() - sameDistanceTolerance && oldDist <= d.getDist() + sameDistanceTolerance)
+				{
+					robot.rotate(Math.random() * 270 + 90);
+				}
 				else if(d.getDist() > moveDist + minDistFromWall)
 				{
 					robot.move(moveDist);
@@ -164,6 +170,7 @@ public class Pilot implements RobotListener
 					robot.rotate(angle);
 				}
 			}
+			oldDist = d.getDist();
 		}
 		robot.measure();
 		Particle best = mcl.getBest();
