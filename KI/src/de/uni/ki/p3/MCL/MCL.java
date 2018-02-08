@@ -20,7 +20,7 @@ public class MCL implements RobotListener
 		this.config = config;
 		generator = new MCLLejosParticleGenerator();
 		weighter = new MCLLejosWeightFunctionPixy();
-		resampler = new MCLLejosResampler();
+		resampler = new MCLShrinkingLejosResampler();
 		this.map = map;
 		listener = new ArrayList<>();
 	}
@@ -156,7 +156,8 @@ public class MCL implements RobotListener
 	
 	public Particle getBest()
 	{
-		final int numParticles = config.initialParticleCount;
+		final int numParticles = particles.size();
+//		final int numParticles = config.initialParticleCount;
 		
 	    double totalWeights = 0;
 	    double estimatedX = 0;
