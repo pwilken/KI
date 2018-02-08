@@ -19,7 +19,7 @@ public class MCL implements RobotListener
 		particles = new Vector<>();
 		this.config = config;
 		generator = new MCLLejosParticleGenerator();
-		weighter = new MCLLejosWeightFunction();
+		weighter = new MCLLejosWeightFunctionPixy();
 		resampler = new MCLLejosResampler();
 		this.map = map;
 		listener = new ArrayList<>();
