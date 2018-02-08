@@ -4,9 +4,10 @@ import java.io.*;
 import java.util.Random;
 import java.util.concurrent.Callable;
 
-import de.uni.ki.p3.MCL.*;
 import de.uni.ki.p3.SVG.SvgDocument;
 import de.uni.ki.p3.gui.nodes.GraphicNode;
+import de.uni.ki.p3.mcl.*;
+import de.uni.ki.p3.mcl.map.*;
 import de.uni.ki.p3.pilot.Pilot;
 import de.uni.ki.p3.robot.*;
 import javafx.application.Application;

@@ -1,9 +1,10 @@
 /*
  * Copyright © 2018 Unitechnik Systems GmbH. All Rights Reserved.
  */
-package de.uni.ki.p3.MCL;
+package de.uni.ki.p3.mcl.weighter;
 
 import de.uni.ki.p3.KIDistance;
+import de.uni.ki.p3.mcl.*;
 import de.uni.ki.p3.robot.*;
 
 public class MCLLejosWeightFunction implements MCLWeightFunction

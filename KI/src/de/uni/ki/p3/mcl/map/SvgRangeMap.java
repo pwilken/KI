@@ -1,12 +1,13 @@
 /*
  * Copyright © 2018 Unitechnik Systems GmbH. All Rights Reserved.
  */
-package de.uni.ki.p3.MCL;
+package de.uni.ki.p3.mcl.map;
 
 import java.util.*;
 
 import de.uni.ki.p3.KIDistance;
 import de.uni.ki.p3.SVG.*;
+import de.uni.ki.p3.mcl.Position;
 
 public class SvgRangeMap implements RangeMap
 {

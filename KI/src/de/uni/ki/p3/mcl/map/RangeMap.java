@@ -1,11 +1,12 @@
 /*
  * Copyright © 2018 Unitechnik Systems GmbH. All Rights Reserved.
  */
-package de.uni.ki.p3.MCL;
+package de.uni.ki.p3.mcl.map;
 
 import java.util.List;
 
 import de.uni.ki.p3.KIDistance;
+import de.uni.ki.p3.mcl.Position;
 
 public interface RangeMap
 {

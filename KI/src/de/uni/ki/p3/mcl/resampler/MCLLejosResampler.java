@@ -1,9 +1,11 @@
 /*
  * Copyright © 2018 Unitechnik Systems GmbH. All Rights Reserved.
  */
-package de.uni.ki.p3.MCL;
+package de.uni.ki.p3.mcl.resampler;
 
 import java.util.*;
+
+import de.uni.ki.p3.mcl.*;
 
 public class MCLLejosResampler implements MCLResampler
 {

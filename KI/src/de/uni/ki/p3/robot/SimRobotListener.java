@@ -3,7 +3,7 @@
  */
 package de.uni.ki.p3.robot;
 
-import de.uni.ki.p3.MCL.Position;
+import de.uni.ki.p3.mcl.Position;
 
 public interface SimRobotListener
 {

@@ -1,7 +1,11 @@
-package de.uni.ki.p3.MCL;
+package de.uni.ki.p3.mcl;
 
 import java.util.*;
 
+import de.uni.ki.p3.mcl.generator.*;
+import de.uni.ki.p3.mcl.map.RangeMap;
+import de.uni.ki.p3.mcl.resampler.*;
+import de.uni.ki.p3.mcl.weighter.*;
 import de.uni.ki.p3.robot.*;
 
 public class MCL implements RobotListener
@@ -163,9 +167,9 @@ public class MCL implements RobotListener
 	    double estimatedX = 0;
 	    double estimatedY = 0;
 	    double estimatedAngle = 0;
-	    double varX = 0;
-	    double varY = 0;
-	    double varH = 0;
+//	    double varX = 0;
+//	    double varY = 0;
+//	    double varH = 0;
 	    double minX = 1000000d;
 	    double minY = 1000000d;
 	    double maxX = -1000000d;
@@ -179,12 +183,12 @@ public class MCL implements RobotListener
 	      //float weight = particles.getParticle(i).getWeight();
 	      double weight = 1; // weight is historic at this point, as resample has been done
 	      estimatedX += (x * weight);
-	      varX += (x * x * weight);
+//	      varX += (x * x * weight);
 	      estimatedY += (y * weight);
-	      varY += (y * y * weight);
+//	      varY += (y * y * weight);
 	      double head = p.getTheta();
 	      estimatedAngle += (head * weight);
-	      varH += (head * head * weight);
+//	      varH += (head * head * weight);
 	      totalWeights += weight;
 
 	      if (x < minX)  minX = x;
@@ -195,14 +199,14 @@ public class MCL implements RobotListener
 	    }
 
 	    estimatedX /= totalWeights;
-	    varX /= totalWeights;
-	    varX -= (estimatedX * estimatedX);
+//	    varX /= totalWeights;
+//	    varX -= (estimatedX * estimatedX);
 	    estimatedY /= totalWeights;
-	    varY /= totalWeights;
-	    varY -= (estimatedY * estimatedY);
+//	    varY /= totalWeights;
+//	    varY -= (estimatedY * estimatedY);
 	    estimatedAngle /= totalWeights;
-	    varH /= totalWeights;
-	    varH -= (estimatedAngle * estimatedAngle);
+//	    varH /= totalWeights;
+//	    varH -= (estimatedAngle * estimatedAngle);
 	    
 	    // Normalize angle
 	    while (estimatedAngle > 180) estimatedAngle -= 360;

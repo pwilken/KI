@@ -6,7 +6,8 @@ package de.uni.ki.p3.robot;
 import java.util.*;
 
 import de.uni.ki.p3.*;
-import de.uni.ki.p3.MCL.*;
+import de.uni.ki.p3.mcl.*;
+import de.uni.ki.p3.mcl.map.*;
 import lejos.robotics.Color;
 
 public class SimRobot implements Robot

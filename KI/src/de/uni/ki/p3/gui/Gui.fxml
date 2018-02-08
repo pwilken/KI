@@ -79,7 +79,7 @@
             </TitledPane>
             <TitledPane fx:id="parentSimu" expanded="false" text="Simu-Konfiguration">
                <content>
-                  <VBox prefHeight="200.0" prefWidth="100.0">
+                  <VBox>
                      <children>
                         <Label text="Move-Toleranz" />
                         <TextField fx:id="txtSimuMoveTol" text="0" />
