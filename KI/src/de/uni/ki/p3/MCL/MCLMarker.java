@@ -23,4 +23,10 @@ public class MCLMarker
 	{
 		return stroke;
 	}
+	
+	@Override
+	public String toString()
+	{
+		return "Marker(" + id + "/" + stroke + ")";
+	}
 }

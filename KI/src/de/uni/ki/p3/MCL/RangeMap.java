@@ -16,5 +16,15 @@ public interface RangeMap
 	public boolean isClosed();
 	public boolean isInside(Position pos);
 	public List<MCLMarker> getMarkers();
+	
+	/**
+	 * Measure the distance from the given pos to the given marker.<br>
+	 * a distance of {@link Double#POSITIVE_INFINITY} or an angle less than
+	 * 0 indicates, that the marker cannot be seen from pos
+	 * 
+	 * @param pos the position to measure from
+	 * @param marker the marker to measure to
+	 * @return the distance measured to the given marker
+	 */
 	public KIDistance distanceToMarker(Position pos, MCLMarker marker);
 }

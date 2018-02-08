@@ -77,6 +77,22 @@ public class Main extends Application
 	@FXML
 	private TextField txtIter;
 	@FXML
+	private TextField txtCol1;
+	@FXML
+	private TextField txtCol2;
+	@FXML
+	private TextField txtCol3;
+	@FXML
+	private TextField txtCol4;
+	@FXML
+	private TextField txtCol5;
+	@FXML
+	private TextField txtCol6;
+	@FXML
+	private TextField txtCol7;
+	@FXML
+	private TextField txtCol8;
+	@FXML
 	private TextField txtSimuMoveTol;
 	@FXML
 	private TextField txtSimuRotTol;
@@ -86,6 +102,8 @@ public class Main extends Application
 	private TextField txtSimuAngleTol;
 	@FXML
 	private TextField txtSimuAngles;
+	@FXML
+	private TextField txtSimuAngleCol;
 	@FXML
 	private TextField txtPilotMove;
 	@FXML
@@ -151,6 +169,7 @@ public class Main extends Application
     				{
     					robot.set(new SimRobot());
     					((SimRobot)robot.get()).setMap(rangeMap.get());
+    					((SimRobot)robot.get()).setConfig(config);
     					setTxtValuesSimu((SimRobot)robot.get());
     				}
     				else
@@ -384,6 +403,15 @@ public class Main extends Application
 		{
 			config.initialParticleCount = 200;
 		}
+		
+		config.mapColorCodeToStroke.put(0, txtCol1.getText());
+		config.mapColorCodeToStroke.put(1, txtCol2.getText());
+		config.mapColorCodeToStroke.put(2, txtCol3.getText());
+		config.mapColorCodeToStroke.put(3, txtCol4.getText());
+		config.mapColorCodeToStroke.put(4, txtCol5.getText());
+		config.mapColorCodeToStroke.put(5, txtCol6.getText());
+		config.mapColorCodeToStroke.put(6, txtCol7.getText());
+		config.mapColorCodeToStroke.put(7, txtCol8.getText());
 	}
 	
 	private void setTxtValuesSimu(SimRobot simRobot)
@@ -422,6 +450,15 @@ public class Main extends Application
 		catch(RuntimeException e)
 		{
 			simRobot.setMeasureAngleTolerance(0d);
+		}
+		
+		try
+		{
+			simRobot.setColorMeasureAngle(Double.parseDouble(txtSimuAngleCol.getText()));
+		}
+		catch(RuntimeException e)
+		{
+			simRobot.setColorMeasureAngle(90);
 		}
 		
 		try
