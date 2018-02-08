@@ -5,6 +5,7 @@ package de.uni.ki.p3.MCL;
 
 import java.util.*;
 
+import de.uni.ki.p3.KIDistance;
 import de.uni.ki.p3.SVG.*;
 
 public class SvgRangeMap implements RangeMap
@@ -229,5 +230,19 @@ public class SvgRangeMap implements RangeMap
 		}
 		
 		return up && down && left && right;
+	}
+	
+	@Override
+	public KIDistance distanceToMarker(Position pos, MCLMarker marker)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public List<MCLMarker> getMarkers()
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

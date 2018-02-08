@@ -1,16 +1,14 @@
 /*
  * Copyright © 2018 Unitechnik Systems GmbH. All Rights Reserved.
  */
-package de.uni.ki.p3.robot;
+package de.uni.ki.p3;
 
-import de.uni.ki.p3.KIUtil;
-
-public class RobotDistance
+public class KIDistance
 {
 	private double dist;
 	private double distAngle;
 	
-	public RobotDistance(double dist, double distAngle)
+	public KIDistance(double dist, double distAngle)
 	{
 		this.dist = dist;
 		this.distAngle = distAngle;
@@ -29,12 +27,12 @@ public class RobotDistance
 	@Override
 	public boolean equals(Object obj)
 	{
-		if(!(obj instanceof RobotDistance))
+		if(!(obj instanceof KIDistance))
 		{
 			return false;
 		}
 		
-		RobotDistance o = (RobotDistance)obj;
+		KIDistance o = (KIDistance)obj;
 		
 		return KIUtil.equals(dist, o.dist) && KIUtil.equals(distAngle, o.distAngle);
 	}

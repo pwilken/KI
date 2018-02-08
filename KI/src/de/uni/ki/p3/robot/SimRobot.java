@@ -5,6 +5,7 @@ package de.uni.ki.p3.robot;
 
 import java.util.*;
 
+import de.uni.ki.p3.KIDistance;
 import de.uni.ki.p3.MCL.*;
 import lejos.robotics.Color;
 
@@ -89,9 +90,9 @@ public class SimRobot implements Robot
 		}
 	}
 
-	private List<RobotDistance> getDistances(Position pos, double theta, int... angles)
+	private List<KIDistance> getDistances(Position pos, double theta, int... angles)
 	{
-		List<RobotDistance> distances = new ArrayList<>();
+		List<KIDistance> distances = new ArrayList<>();
 		
 		for(int angle : angles)
 		{
@@ -99,7 +100,7 @@ public class SimRobot implements Robot
 			// we expect a tolerance in distance to only be negative i. e. the measurement is not farther than the real distance
 			double dist = map.distanceToWall(pos, aangle) - (random.nextDouble() * measureDistTolerance);
 			distances.add(
-				new RobotDistance(dist, angle));
+				new KIDistance(dist, angle));
 		}
 		
 		return distances;

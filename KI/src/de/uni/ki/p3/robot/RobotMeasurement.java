@@ -5,15 +5,15 @@ package de.uni.ki.p3.robot;
 
 import java.util.*;
 
-import de.uni.ki.p3.KIUtil;
+import de.uni.ki.p3.*;
 
 public class RobotMeasurement
 {
 	private int colorId;
-	private List<RobotDistance> distances;
+	private List<KIDistance> distances;
 	private RobotPixyRect rect;
 	
-	public RobotMeasurement(int colorId, List<RobotDistance> distances,
+	public RobotMeasurement(int colorId, List<KIDistance> distances,
 							RobotPixyRect rect)
 	{
 		this.colorId = colorId;
@@ -26,14 +26,14 @@ public class RobotMeasurement
 		return colorId;
 	}
 	
-	public List<RobotDistance> getDistances()
+	public List<KIDistance> getDistances()
 	{
 		return distances;
 	}
 	
-	public RobotDistance getDistance(double angle)
+	public KIDistance getDistance(double angle)
 	{
-		for(RobotDistance dist : distances)
+		for(KIDistance dist : distances)
 		{
 			if(KIUtil.equals(angle, dist.getDistAngle()))
 			{

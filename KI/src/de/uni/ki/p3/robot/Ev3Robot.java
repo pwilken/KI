@@ -1,6 +1,8 @@
 package de.uni.ki.p3.robot;
 
 import de.uni.ki.p1.Command;
+import de.uni.ki.p3.KIDistance;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -80,13 +82,13 @@ public class Ev3Robot implements Robot
 		String colorCode = parts[i++];
 		
 		int numDistances = (int)Double.parseDouble(parts[1]);
-		List<RobotDistance> distances = new ArrayList<>();
+		List<KIDistance> distances = new ArrayList<>();
 		for(int j = 0; j < numDistances; ++j)
 		{
 			double dist = Double.parseDouble(parts[i++]);
 			double distAngle = Double.parseDouble(parts[i++]);
 			
-			distances.add(new RobotDistance(dist, distAngle));
+			distances.add(new KIDistance(dist, distAngle));
 		}
 
 		RobotMeasurement robotMeasurement = new RobotMeasurement(

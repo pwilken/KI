@@ -8,7 +8,7 @@ import java.net.*;
 import java.util.*;
 
 import de.uni.ki.p1.pixy.*;
-import de.uni.ki.p3.robot.RobotDistance;
+import de.uni.ki.p3.KIDistance;
 import lejos.hardware.motor.*;
 import lejos.hardware.port.*;
 import lejos.hardware.sensor.*;
@@ -122,7 +122,7 @@ public class LocalRobot
 	private String measure(float[] samples)
 	{
 		final float color = getColor(samples);
-		final List<RobotDistance> distances = getDistances(samples);
+		final List<KIDistance> distances = getDistances(samples);
 		
 		PixyColorCodeRectangle r = cam.getLargestDetectedColorCodeBlock();
 		
@@ -138,7 +138,7 @@ public class LocalRobot
         sb.append(Command.SEPARATOR).append(r.getColorCode());
         
         sb.append(Command.SEPARATOR).append(distances.size());
-        for(RobotDistance d : distances)
+        for(KIDistance d : distances)
         {
         	sb.append(Command.SEPARATOR).append(d.getDist())
         		.append(Command.SEPARATOR).append(d.getDistAngle());
@@ -147,16 +147,16 @@ public class LocalRobot
         return sb.toString();
 	}
 
-	private List<RobotDistance> getDistances(float[] samples)
+	private List<KIDistance> getDistances(float[] samples)
 	{
-		List<RobotDistance> distances = new ArrayList<>();
+		List<KIDistance> distances = new ArrayList<>();
 		
 		for(int angle : measureAngles)
 		{
 			rotateUsTo(angle);
 			float dist = getDist(samples);
 			
-			distances.add(new RobotDistance(dist, angle));
+			distances.add(new KIDistance(dist, angle));
 		}
 		return distances;
 	}

@@ -5,6 +5,7 @@ package de.uni.ki.p3.pilot;
 
 import java.util.*;
 
+import de.uni.ki.p3.KIDistance;
 import de.uni.ki.p3.MCL.*;
 import de.uni.ki.p3.robot.*;
 
@@ -134,7 +135,7 @@ public class Pilot implements RobotListener
 		// TODO $DeH
 		if(lastMeasurement != null)
 		{
-			RobotDistance d = lastMeasurement.getDistance(0d);
+			KIDistance d = lastMeasurement.getDistance(0d);
 			
 			if(d == null)
 			{

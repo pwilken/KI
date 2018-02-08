@@ -3,6 +3,7 @@
  */
 package de.uni.ki.p3.MCL;
 
+import de.uni.ki.p3.KIDistance;
 import de.uni.ki.p3.robot.*;
 
 public class MCLLejosWeightFunction implements MCLWeightFunction
@@ -19,7 +20,7 @@ public class MCLLejosWeightFunction implements MCLWeightFunction
 		{
 			return 0d;
 		}
-		for(RobotDistance d : measurement.getDistances())
+		for(KIDistance d : measurement.getDistances())
 		{
 			double angle = d.getDistAngle();
 
