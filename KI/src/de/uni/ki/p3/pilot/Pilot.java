@@ -5,7 +5,9 @@ package de.uni.ki.p3.pilot;
 
 import java.util.*;
 
-import de.uni.ki.p3.MCL.*;
+import de.uni.ki.p3.KIDistance;
+import de.uni.ki.p3.mcl.*;
+import de.uni.ki.p3.mcl.map.RangeMap;
 import de.uni.ki.p3.robot.*;
 
 public class Pilot implements RobotListener
@@ -134,7 +136,7 @@ public class Pilot implements RobotListener
 		// TODO $DeH
 		if(lastMeasurement != null)
 		{
-			RobotDistance d = lastMeasurement.getDistance(0d);
+			KIDistance d = lastMeasurement.getDistance(0d);
 			
 			if(d == null)
 			{
@@ -143,8 +145,14 @@ public class Pilot implements RobotListener
 			}
 			else
 			{
-				if (Math.random() >= 0.95) {
-					robot.rotate(Math.random() * 360);
+				if (Math.random() >= 0.95)
+				{
+					double angle = Math.random() * 180 + 90;
+					if(angle > 180)
+					{
+						angle = angle - 360;
+					}
+					robot.rotate(angle);
 				}
 				else if(oldDist >= d.getDist() - sameDistanceTolerance && oldDist <= d.getDist() + sameDistanceTolerance)
 				{
@@ -156,7 +164,12 @@ public class Pilot implements RobotListener
 				}
 				else
 				{
-					robot.rotate(Math.random() * 270 + 90);
+					double angle = Math.random() * 180 + 90;
+					if(angle > 180)
+					{
+						angle = angle - 360;
+					}
+					robot.rotate(angle);
 				}
 			}
 			oldDist = d.getDist();

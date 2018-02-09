@@ -1,11 +1,13 @@
 /*
  * Copyright © 2018 Unitechnik Systems GmbH. All Rights Reserved.
  */
-package de.uni.ki.p3.MCL;
+package de.uni.ki.p3.mcl.map;
 
 import java.util.*;
 
+import de.uni.ki.p3.KIDistance;
 import de.uni.ki.p3.SVG.*;
+import de.uni.ki.p3.mcl.Position;
 
 public class SvgRangeMap implements RangeMap
 {
@@ -229,5 +231,19 @@ public class SvgRangeMap implements RangeMap
 		}
 		
 		return up && down && left && right;
+	}
+	
+	@Override
+	public KIDistance distanceToMarker(Position pos, MCLMarker marker)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public List<MCLMarker> getMarkers()
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

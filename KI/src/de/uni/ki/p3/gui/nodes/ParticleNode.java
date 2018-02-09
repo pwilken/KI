@@ -3,7 +3,7 @@
  */
 package de.uni.ki.p3.gui.nodes;
 
-import de.uni.ki.p3.MCL.Particle;
+import de.uni.ki.p3.mcl.Particle;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;

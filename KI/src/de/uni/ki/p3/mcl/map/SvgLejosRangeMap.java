@@ -1,23 +1,29 @@
 /*
  * Copyright © 2018 Unitechnik Systems GmbH. All Rights Reserved.
  */
-package de.uni.ki.p3.MCL;
+package de.uni.ki.p3.mcl.map;
 
 import java.util.*;
 
+import de.uni.ki.p3.KIDistance;
 import de.uni.ki.p3.SVG.*;
+import de.uni.ki.p3.mcl.Position;
 
 public class SvgLejosRangeMap implements RangeMap
 {
 	private double width;
 	private double height;
 	private List<Line> lines;
+	private List<MCLMarker> markers;
+	private List<SvgCircle> circles;
 
 	public SvgLejosRangeMap(SvgDocument svg)
 	{
 		width = svg.getWidth();
 		height = svg.getHeight();
 		lines = new ArrayList<>();
+		markers = new ArrayList<>();
+		circles = new ArrayList<>();
 
 		parse(svg.getRoot());
 	}
@@ -35,7 +41,9 @@ public class SvgLejosRangeMap implements RangeMap
 		}
 		else if(e instanceof SvgCircle)
 		{
-
+			SvgCircle c = (SvgCircle)e;
+			circles.add(c);
+			markers.add(new MCLMarker(c.getId(), c.getStroke()));
 		}
 		else if(e instanceof SvgGroup)
 		{
@@ -133,6 +141,52 @@ public class SvgLejosRangeMap implements RangeMap
 		}
 		// We are inside if the number of intersections is odd
 		return count % 2 == 1 || count2 % 2 == 1;
+	}
+	
+	@Override
+	public List<MCLMarker> getMarkers()
+	{
+		return markers;
+	}
+	
+	@Override
+	public KIDistance distanceToMarker(Position pos, MCLMarker marker)
+	{
+		SvgCircle c = getMarkerCircle(marker);
+		Line line = new Line(pos.getX(), pos.getY(), c.getCx(), c.getCy());
+		
+		double dx = line.x2 - line.x1;
+		double dy = line.y2 - line.y1;
+		
+		double angle =  Math.toDegrees(
+							Math.atan2(dy, dx));
+		
+		if(angle < 0)
+		{
+			angle += 360;
+		}
+		
+		for(Line l : lines)
+		{
+			if(line.intersectsAt(l) != null)
+			{
+				return new KIDistance(Double.POSITIVE_INFINITY, angle);
+			}
+		}
+		
+		return new KIDistance(Math.sqrt(dx * dx + dy * dy), angle);
+	}
+
+	private SvgCircle getMarkerCircle(MCLMarker marker)
+	{
+		for(SvgCircle c : circles)
+		{
+			if(c.getId().equals(marker.getId()))
+			{
+				return c;
+			}
+		}
+		return null;
 	}
 
 	private class Line

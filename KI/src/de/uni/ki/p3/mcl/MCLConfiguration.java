@@ -1,9 +1,9 @@
 /*
  * Copyright © 2018 Unitechnik Systems GmbH. All Rights Reserved.
  */
-package de.uni.ki.p3.MCL;
+package de.uni.ki.p3.mcl;
 
-import java.util.Random;
+import java.util.*;
 
 public class MCLConfiguration
 {
@@ -23,6 +23,8 @@ public class MCLConfiguration
 	public double xTolerance = 0d;
 	public double yTolerance = 0d;
 	public double angleTolerance = 0;
+	
+	public final Map<Integer, String> mapColorCodeToStroke = new HashMap<>();
 	
 	public Random random = new Random();
 }

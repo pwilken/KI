@@ -5,37 +5,35 @@ package de.uni.ki.p3.robot;
 
 import java.util.*;
 
-import de.uni.ki.p3.KIUtil;
+import de.uni.ki.p3.*;
 
 public class RobotMeasurement
 {
 	private int colorId;
-	private List<RobotDistance> distances;
+	private List<KIDistance> distances;
+	private RobotPixyRect rect;
 	
-	public RobotMeasurement(int colorId, double dist, double distAngle)
-	{
-		this(colorId, Arrays.asList(new RobotDistance(dist, distAngle)));
-	}
-	
-	public RobotMeasurement(int colorId, List<RobotDistance> distances)
+	public RobotMeasurement(int colorId, List<KIDistance> distances,
+							RobotPixyRect rect)
 	{
 		this.colorId = colorId;
 		this.distances = Collections.unmodifiableList(distances);
+		this.rect = rect;
 	}
-	
+
 	public int getColorId()
 	{
 		return colorId;
 	}
 	
-	public List<RobotDistance> getDistances()
+	public List<KIDistance> getDistances()
 	{
 		return distances;
 	}
 	
-	public RobotDistance getDistance(double angle)
+	public KIDistance getDistance(double angle)
 	{
-		for(RobotDistance dist : distances)
+		for(KIDistance dist : distances)
 		{
 			if(KIUtil.equals(angle, dist.getDistAngle()))
 			{
@@ -46,6 +44,11 @@ public class RobotMeasurement
 		return null;
 	}
 	
+	public RobotPixyRect getRect()
+	{
+		return rect;
+	}
+	
 	@Override
 	public boolean equals(Object obj)
 	{
@@ -53,7 +56,7 @@ public class RobotMeasurement
 		{
 			RobotMeasurement m = (RobotMeasurement)obj;
 			
-			return colorId == m.colorId && distances.equals(m.distances);
+			return colorId == m.colorId && distances.equals(m.distances) && rect.equals(m.rect);
 		}
 		
 		return false;
@@ -62,6 +65,6 @@ public class RobotMeasurement
 	@Override
 	public String toString()
 	{
-		return "Measurment(" + colorId + ", " + distances + ")";
+		return "Measurment(" + colorId + ", " + distances + ", " + rect + ")";
 	}
 }

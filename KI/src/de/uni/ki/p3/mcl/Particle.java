@@ -1,4 +1,4 @@
-package de.uni.ki.p3.MCL;
+package de.uni.ki.p3.mcl;
 
 import de.uni.ki.p3.KIUtil;
 

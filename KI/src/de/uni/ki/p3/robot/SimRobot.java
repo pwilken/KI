@@ -5,7 +5,9 @@ package de.uni.ki.p3.robot;
 
 import java.util.*;
 
-import de.uni.ki.p3.MCL.*;
+import de.uni.ki.p3.*;
+import de.uni.ki.p3.mcl.*;
+import de.uni.ki.p3.mcl.map.*;
 import lejos.robotics.Color;
 
 public class SimRobot implements Robot
@@ -15,12 +17,14 @@ public class SimRobot implements Robot
 	private Position pos;
 	private double theta;
 	private RangeMap map;
+	private MCLConfiguration config;
 	
 	private Random random;
 	private double moveTolerance;
 	private double rotateTolerance;
 	private double measureAngleTolerance;
 	private double measureDistTolerance;
+	private double colorMeasureAngle;
 	
 	private int[] measureAngles;
 	
@@ -75,17 +79,81 @@ public class SimRobot implements Robot
 	{
 		RobotMeasurement measurement = new RobotMeasurement(
 			map.strokeAt(pos) == null ? Color.NONE : Color.BLACK,
-			getDistances(pos, theta, measureAngles));
+			getDistances(pos, theta, measureAngles),
+			getPixyRect());
 		
 		for(RobotListener l : listener)
 		{
 			l.robotMeasured(this, measurement);
 		}
 	}
-
-	private List<RobotDistance> getDistances(Position pos, double theta, int... angles)
+	
+	private RobotPixyRect getPixyRect()
 	{
-		List<RobotDistance> distances = new ArrayList<>();
+		MCLMarker m = null;
+		KIDistance d = null;
+		for(MCLMarker ma : map.getMarkers())
+		{
+			KIDistance dist = map.distanceToMarker(getPos(), ma);
+			if(Double.isInfinite(dist.getDist()))
+			{
+				continue;
+			}
+			
+			{
+				double a = dist.getDistAngle() - theta;
+				a = a % 360d;
+				if(a < 0)
+				{
+					a += 360d;
+				}
+				dist = new KIDistance(dist.getDist(), a);
+			}
+			if(m == null)
+			{
+				m = ma;
+				d = dist;
+			}
+			else
+			{
+				double aOld = d.getDistAngle() > 180 ? 360 - d.getDistAngle() : d.getDistAngle();
+				double aNew = dist.getDistAngle() > 180 ? 360 - dist.getDistAngle() : dist.getDistAngle();
+				
+				if(aNew < aOld)
+				{
+					m = ma;
+					d = dist;
+				}
+			}
+		}
+		
+		if(m == null
+			|| Math.min(d.getDistAngle(), 360 - d.getDistAngle()) > colorMeasureAngle / 2)
+		{
+			return new RobotPixyRect("", 0, 0, 0, 0, 0);
+		}
+		
+		for(Integer key : config.mapColorCodeToStroke.keySet())
+		{
+			if(config.mapColorCodeToStroke.get(key).equalsIgnoreCase(m.getStroke()))
+			{
+				return new RobotPixyRect(
+					config.mapColorCodeToStroke.get(key),
+					-1,
+					-1,
+					2,
+					2,
+					(int)d.getDistAngle());
+			}
+		}
+		
+		throw new IllegalStateException(
+			"could not find colorcode for stroke<" + m.getStroke() + "> of marker<" + m.getId() + ">");
+	}
+
+	private List<KIDistance> getDistances(Position pos, double theta, int... angles)
+	{
+		List<KIDistance> distances = new ArrayList<>();
 		
 		for(int angle : angles)
 		{
@@ -93,7 +161,7 @@ public class SimRobot implements Robot
 			// we expect a tolerance in distance to only be negative i. e. the measurement is not farther than the real distance
 			double dist = map.distanceToWall(pos, aangle) - (random.nextDouble() * measureDistTolerance);
 			distances.add(
-				new RobotDistance(dist, angle));
+				new KIDistance(dist, angle));
 		}
 		
 		return distances;
@@ -156,6 +224,16 @@ public class SimRobot implements Robot
 		this.map = map;
 	}
 	
+	public MCLConfiguration getConfig()
+	{
+		return config;
+	}
+	
+	public void setConfig(MCLConfiguration config)
+	{
+		this.config = config;
+	}
+	
 	public int[] getMeasureAngles()
 	{
 		return measureAngles;
@@ -214,6 +292,16 @@ public class SimRobot implements Robot
 	public void setMeasureDistTolerance(double measureDistTolerance)
 	{
 		this.measureDistTolerance = measureDistTolerance;
+	}
+	
+	public double getColorMeasureAngle()
+	{
+		return colorMeasureAngle;
+	}
+	
+	public void setColorMeasureAngle(double colorMeasureAngle)
+	{
+		this.colorMeasureAngle = colorMeasureAngle;
 	}
 
 	@Override

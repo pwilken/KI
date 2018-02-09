@@ -7,8 +7,8 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-import de.uni.ki.p3.robot.RobotDistance;
-import lejos.hardware.device.NXTCam;
+import de.uni.ki.p1.pixy.*;
+import de.uni.ki.p3.KIDistance;
 import lejos.hardware.motor.*;
 import lejos.hardware.port.*;
 import lejos.hardware.sensor.*;
@@ -19,11 +19,11 @@ import lejos.robotics.navigation.MovePilot;
 public class LocalRobot
 {
 	public final int PORT = 8000;
-	public final int[] measureAngles = new int[] {-90, -45, 0, 45, 90};
+	public final int[] measureAngles = new int[] {0};
 	
 	private RegulatedMotor usMotor;
 	private MovePilot pilot;
-	private NXTCam cam;
+	private PixyCam cam;
 	private EV3ColorSensor col;
 	private EV3UltrasonicSensor us;
 	
@@ -42,8 +42,10 @@ public class LocalRobot
 		
 		Chassis chassis = new WheeledChassis(new Wheel[]{wheel1, wheel2}, 2); 
 		pilot = new MovePilot(chassis);
+		pilot.setLinearSpeed(6);  // cm per second
+		pilot.setAngularSpeed(90);
 
-		cam = new NXTCam(SensorPort.S1);
+		cam = new PixyCam(SensorPort.S3);
 		col = new EV3ColorSensor(SensorPort.S2);
 		us = new EV3UltrasonicSensor(SensorPort.S4);
 	}
@@ -52,6 +54,7 @@ public class LocalRobot
 	{
 		try(ServerSocket serverSocket = new ServerSocket(PORT))
 		{
+			System.out.println("Waiting for connection");
 			while(true)
 			{
 				try(Socket clientSocket = serverSocket.accept())
@@ -92,11 +95,13 @@ public class LocalRobot
             		case Command.MOVE:
             		{
             			pilot.travel(Double.parseDouble(parts[1]));
+            			out.println("Moved");
             			break;
             		}
             		case Command.ROTATE:
             		{
             			pilot.rotate(Double.parseDouble(parts[1]));
+            			out.println("Rotated");
             			break;
             		}
             		case Command.MEASURE:
@@ -117,12 +122,23 @@ public class LocalRobot
 	private String measure(float[] samples)
 	{
 		final float color = getColor(samples);
-		final List<RobotDistance> distances = getDistances(samples);
+		final List<KIDistance> distances = getDistances(samples);
+		
+		PixyColorCodeRectangle r = cam.getLargestDetectedColorCodeBlock();
 		
         StringBuilder sb = new StringBuilder();
+        
         sb.append(String.valueOf(color));
+        
+        sb.append(Command.SEPARATOR).append(r.getX());
+        sb.append(Command.SEPARATOR).append(r.getY());
+        sb.append(Command.SEPARATOR).append(r.getWidth());
+        sb.append(Command.SEPARATOR).append(r.getHeight());
+        sb.append(Command.SEPARATOR).append(r.getAngle());
+        sb.append(Command.SEPARATOR).append(r.getColorCode());
+        
         sb.append(Command.SEPARATOR).append(distances.size());
-        for(RobotDistance d : distances)
+        for(KIDistance d : distances)
         {
         	sb.append(Command.SEPARATOR).append(d.getDist())
         		.append(Command.SEPARATOR).append(d.getDistAngle());
@@ -131,16 +147,16 @@ public class LocalRobot
         return sb.toString();
 	}
 
-	private List<RobotDistance> getDistances(float[] samples)
+	private List<KIDistance> getDistances(float[] samples)
 	{
-		List<RobotDistance> distances = new ArrayList<>();
+		List<KIDistance> distances = new ArrayList<>();
 		
 		for(int angle : measureAngles)
 		{
 			rotateUsTo(angle);
 			float dist = getDist(samples);
 			
-			distances.add(new RobotDistance(dist, angle));
+			distances.add(new KIDistance(dist, angle));
 		}
 		return distances;
 	}

@@ -3,7 +3,7 @@
  */
 package de.uni.ki.p3.gui.nodes;
 
-import de.uni.ki.p3.MCL.Position;
+import de.uni.ki.p3.mcl.Position;
 import de.uni.ki.p3.robot.*;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;

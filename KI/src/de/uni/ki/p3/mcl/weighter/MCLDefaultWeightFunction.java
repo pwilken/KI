@@ -1,9 +1,10 @@
 /*
  * Copyright © 2018 Unitechnik Systems GmbH. All Rights Reserved.
  */
-package de.uni.ki.p3.MCL;
+package de.uni.ki.p3.mcl.weighter;
 
-import de.uni.ki.p3.KIUtil;
+import de.uni.ki.p3.*;
+import de.uni.ki.p3.mcl.*;
 import de.uni.ki.p3.robot.*;
 
 public class MCLDefaultWeightFunction implements MCLWeightFunction
@@ -19,7 +20,7 @@ public class MCLDefaultWeightFunction implements MCLWeightFunction
 	private double newWeight(MCL mcl, RobotMeasurement measurement, Particle p)
 	{
 		double weight = 1d;
-		for(RobotDistance distance : measurement.getDistances())
+		for(KIDistance distance : measurement.getDistances())
 		{
 			double dist = mcl.getMap().distanceToWall(p.getPos(), p.getTheta() + distance.getDistAngle());
 			double d = KIUtil.positiveDistance(dist, distance.getDist());

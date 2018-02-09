@@ -5,7 +5,7 @@ package de.uni.ki.p3.gui.nodes;
 
 import java.util.*;
 
-import de.uni.ki.p3.MCL.*;
+import de.uni.ki.p3.mcl.*;
 import de.uni.ki.p3.pilot.*;
 import javafx.application.Platform;
 import javafx.scene.*;
